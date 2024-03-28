@@ -23,7 +23,7 @@ class AuthController extends Controller
         }
         $token = $user->createToken($request->nickname)->plainTextToken;
         return $this->success('Token created',
-            ['token' =>$user->createToken($request->nickname)->plainTextToken]);
+            ['token' => $user->createToken($request->nickname)->plainTextToken]);
     }
 
     public function register(RegisterRequest $request)
@@ -32,11 +32,14 @@ class AuthController extends Controller
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'nickname' => $request->nickname,
-            'phone' => $request->phone
+            'phone' => $request->phone,
+            'password' => $request->password
         ]);
         $user->assignRole('worker');
         auth()->login($user);
-        return $user->createToken($request->nickname)->plainTextToken;
+        return $this->success('You registered successfully',
+            ['token' => $user->createToken($request->nickname)->plainTextToken]
+        );
     }
 
     public function logout()

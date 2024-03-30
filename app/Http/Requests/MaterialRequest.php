@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreBoxRequest extends FormRequest
+class MaterialRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,10 +22,8 @@ class StoreBoxRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required',
-            'per_liner_meter' => 'required',
-            'remainder'=> 'required|numeric',
-            'sort_by' => 'required|numeric',
-            ];
+            "quantity" =>"required|numeric",
+            "length_material" =>"required|numeric"
+        ];
     }
 }

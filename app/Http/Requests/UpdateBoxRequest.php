@@ -11,7 +11,7 @@ class UpdateBoxRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,10 @@ class UpdateBoxRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required',
+            'per_liner_meter' => 'required',
+            'remainder'=> 'required|numeric',
+            'sort_by' => 'required|numeric',
         ];
     }
 }

@@ -14,10 +14,9 @@ return new class extends Migration
         Schema::create('boxes', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('per_liner_meter');
+            $table->float('per_liner_meter');
             $table->integer('remainder');
-            $table->string('order');
-
+            $table->string('sort_by');
             $table->timestamps();
         });
     }

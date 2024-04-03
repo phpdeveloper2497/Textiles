@@ -10,6 +10,10 @@ use App\Http\Requests\UpdateBoxRequest;
 
 class BoxController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware("auth:sanctum");
+    }
 
     public function index()
     {
@@ -61,15 +65,14 @@ class BoxController extends Controller
         return $this->success("Box $box->id deleted");
     }
 
-    public function addMaterial(MaterialRequest $request,$id)
+    public function addMaterial(MaterialRequest $request, $id)
     {
         $box = Box::find($id);
-       if ($box)
-       {
-           $add_material = $request->length_material * $request->quantity;
-           Box::query()->where('id', '=', $request->id)->increment('remainder', $add_material);
-           return $this->success("Box $box->id to added material");
-       }
+        if ($box) {
+            $add_material = $request->length_material * $request->quantity;
+            Box::query()->where('id', '=', $request->id)->increment('remainder', $add_material);
+            return $this->success("Box $box->id to added material");
+        }
 
     }
 }

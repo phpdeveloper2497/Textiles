@@ -11,7 +11,7 @@ class UpdateBoxHistoryRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,15 @@ class UpdateBoxHistoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "box_id" => "required",
+            "user_id" => "required",
+            "in_storage" => "required",
+            "out_storage" => "required",
+            "returned" => "required",
+            "per_pc_meter" => "required",
+            "pc" => "required",
+            "length" => "required",
+            "commentary" => "required|String|max:255"
         ];
     }
 }

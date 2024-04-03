@@ -2,26 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\BoxHistoryResource;
 use App\Models\BoxHistory;
 use App\Http\Requests\StoreBoxHistoryRequest;
 use App\Http\Requests\UpdateBoxHistoryRequest;
 
 class BoxHistoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct()
     {
-        //
+        $this->middleware("auth:sanctum");
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function index()
     {
-        //
+        $boxhistory = BoxHistory::all();
+        return $this->reply(BoxHistoryResource::collection($boxhistory));
     }
 
     /**
@@ -29,7 +25,18 @@ class BoxHistoryController extends Controller
      */
     public function store(StoreBoxHistoryRequest $request)
     {
-        //
+        $boxhistory = BoxHistory::create([
+            "box_id" => $request->box_id,
+            "user_id" => $request->user_id,
+            "in_storage" => $request->in_storage,
+            "out_storage" => $request->out_storage,
+            "returned" => $request->returned,
+            "per_pc_meter" => $request->per_pc_meter,
+            "pc" => $request->pc,
+            "length" => $request->length,
+            "commentary" => $request->commentary
+        ]);
+        return $this->success('Boxhistory done successfully', $boxhistory);
     }
 
     /**
@@ -37,15 +44,7 @@ class BoxHistoryController extends Controller
      */
     public function show(BoxHistory $boxHistory)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(BoxHistory $boxHistory)
-    {
-        //
+        return $this->reply(new BoxHistoryResource($boxHistory));
     }
 
     /**
@@ -53,7 +52,18 @@ class BoxHistoryController extends Controller
      */
     public function update(UpdateBoxHistoryRequest $request, BoxHistory $boxHistory)
     {
-        //
+        $boxHistory->update([
+            "box_id" => $request->box_id,
+            "user_id" => $request->user_id,
+            "in_storage" => $request->in_storage,
+            "out_storage" => $request->out_storage,
+            "returned" => $request->returned,
+            "per_pc_meter" => $request->per_pc_meter,
+            "pc" => $request->pc,
+            "length" => $request->length,
+            "commentary" => $request->commentary
+        ]);
+
     }
 
     /**
@@ -61,6 +71,9 @@ class BoxHistoryController extends Controller
      */
     public function destroy(BoxHistory $boxHistory)
     {
-        //
+        if (auth()->user()) {
+            $boxHistory->delete();
+            return $this->success('Box History deleted successfully');
+        }
     }
 }

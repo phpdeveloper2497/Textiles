@@ -29,8 +29,7 @@ class UpdateBoxHistoryRequest extends FormRequest
             "returned" => "required",
             "per_pc_meter" => "required",
             "pc" => "required",
-            "length" => "required",
-            "commentary" => "required|String|max:255"
+            "commentary" => "required|string|max:255"
         ];
     }
 }

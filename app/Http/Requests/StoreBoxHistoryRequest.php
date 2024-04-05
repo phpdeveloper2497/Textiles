@@ -22,15 +22,18 @@ class StoreBoxHistoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "box_id" => "required",
-            "user_id" => "required",
-            "in_storage" => "required",
+            "box_id" => [
+                'numeric',
+                'exists:boxes,id',
+                'required'
+            ],
+            "user_id" =>['required','exists:users,id','numeric'],
+            "in_storage" => ['required','boolean'],
             "out_storage" => "required",
-            "returned" => "required",
-            "per_pc_meter" => "required",
-            "pc" => "required",
-            "length" => "required",
-            "commentary" => "required|String|max:255"
+            "returned" => ['required','boolean'],
+            "per_pc_meter" => "required|numeric",
+            "pc" => "required|numeric",
+            "commentary" => "nullable|string|max:255"
         ];
     }
 }

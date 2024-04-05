@@ -24,7 +24,6 @@ class UpdateBoxRequest extends FormRequest
         return [
             'name' => 'required',
             'per_liner_meter' => 'required',
-            'remainder'=> 'required|numeric',
             'sort_by' => 'required|numeric',
         ];
     }

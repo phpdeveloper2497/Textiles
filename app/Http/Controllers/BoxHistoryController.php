@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\BoxHistoryResource;
+use App\Http\Resources\StoreBoxHistoryResource;
+use App\Models\Box;
 use App\Models\BoxHistory;
 use App\Http\Requests\StoreBoxHistoryRequest;
 use App\Http\Requests\UpdateBoxHistoryRequest;
@@ -27,16 +29,29 @@ class BoxHistoryController extends Controller
     {
         $boxhistory = BoxHistory::create([
             "box_id" => $request->box_id,
-            "user_id" => $request->user_id,
+            "user_id" => $request->user()->id,
             "in_storage" => $request->in_storage,
             "out_storage" => $request->out_storage,
             "returned" => $request->returned,
             "per_pc_meter" => $request->per_pc_meter,
             "pc" => $request->pc,
-            "length" => $request->length,
+            "length" => $request->per_pc_meter * $request->pc,
             "commentary" => $request->commentary
         ]);
-        return $this->success('Boxhistory done successfully', $boxhistory);
+        if ($request->in_storage === true || $request->returned === true) {
+            Box::query()->where('id', '=', $request->box_id)->first()->increment('remainder', $boxhistory->length);
+        }
+
+        if ($request->out_storage === true) {
+            $box = Box::query()->where('id', '=', $request->box_id)->first();
+            if ($box->remainder > 0 && $boxhistory->length <= $box->remainder) {
+                $box->remainder -= $boxhistory->length;
+                $box->save();
+            } else {
+                return 'the product is not enough';
+            }
+        }
+        return $this->success('Boxhistory done successfully', new StoreBoxHistoryResource($boxhistory));
     }
 
     /**
@@ -44,7 +59,7 @@ class BoxHistoryController extends Controller
      */
     public function show(BoxHistory $boxHistory)
     {
-        return $this->reply(new BoxHistoryResource($boxHistory));
+
     }
 
     /**
@@ -60,7 +75,6 @@ class BoxHistoryController extends Controller
             "returned" => $request->returned,
             "per_pc_meter" => $request->per_pc_meter,
             "pc" => $request->pc,
-            "length" => $request->length,
             "commentary" => $request->commentary
         ]);
 

@@ -3,10 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MaterialRequest;
+use App\Http\Requests\ShowBoxRequest;
 use App\Http\Resources\BoxResource;
+use App\Http\Resources\ShowBoxHistoryResource;
+use App\Http\Resources\StoreBoxHistoryResource;
 use App\Models\Box;
 use App\Http\Requests\StoreBoxRequest;
 use App\Http\Requests\UpdateBoxRequest;
+use App\Models\BoxHistory;
 
 class BoxController extends Controller
 {
@@ -29,7 +33,6 @@ class BoxController extends Controller
         $box = Box::create([
             'name' => $request->get('name'),
             'per_liner_meter' => $request->get('per_liner_meter'),
-            'remainder' => $request->get('remainder'),
             'sort_by' => $request->get('sort_by')
         ]);
         return $this->success('Box created successfully', $box);
@@ -38,10 +41,21 @@ class BoxController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Box $box)
+    public function show(ShowBoxRequest $request, Box $box)
     {
-        $box = Box::find($box);
-        return $this->reply(new BoxResource($box));
+        if ($box->boxHistory->count() > 0) {
+
+            if ($request->in_storage == 1) {
+                return StoreBoxHistoryResource::collection($box->boxhistory()->where('in_storage', '=', true)->get());
+            }
+            if ($request->out_storage == 1) {
+                return StoreBoxHistoryResource::collection($box->boxhistory()->where('out_storage', '=', true)->get());
+            }
+            if ($request->returned == 1) {
+                return StoreBoxHistoryResource::collection($box->boxhistory()->where('returned', '=', true)->get());
+            }
+        return new BoxResource($box);
+        }
     }
 
     /**
@@ -52,7 +66,6 @@ class BoxController extends Controller
         if ($box) {
             $box->name = $request->get('name');
             $box->per_liner_meter = $request->get('per_liner_meter');
-            $box->remainder = $request->get('remainder');
             $box->sort_by = $request->get('sort_by');
             $box->save();
             return $this->success("$box->id box updated", $box);
@@ -63,16 +76,5 @@ class BoxController extends Controller
     {
         $box->delete();
         return $this->success("Box $box->id deleted");
-    }
-
-    public function addMaterial(MaterialRequest $request, $id)
-    {
-        $box = Box::find($id);
-        if ($box) {
-            $add_material = $request->length_material * $request->quantity;
-            Box::query()->where('id', '=', $request->id)->increment('remainder', $add_material);
-            return $this->success("Box $box->id to added material");
-        }
-
     }
 }

@@ -15,13 +15,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('box_id')->constrained();
             $table->foreignId('user_id')->constrained();
-            $table->integer('in_storage');
-            $table->integer('out_storage');
-            $table->integer('returned');
+            $table->boolean('in_storage');
+            $table->boolean('out_storage');
+            $table->boolean('returned');
             $table->integer('per_pc_meter');
             $table->integer('pc');
             $table->integer('length');
-            $table->text('commentary');
+            $table->text('commentary')->nullable();
             $table->timestamps();
         });
     }

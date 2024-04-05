@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('boxes', function (Blueprint $table) {
+        Schema::create('handkerchiefs', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->float('per_liner_meter');
-            $table->integer('remainder')->default(0);
-            $table->string('sort_by');
+            $table->integer('all_products');
+            $table->integer('all_products');
             $table->timestamps();
         });
     }
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('boxes');
+        Schema::dropIfExists('handkerchiefs');
     }
 };

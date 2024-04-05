@@ -28,8 +28,6 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('logout', 'logout')->middleware('auth:sanctum');
 });
 
-Route::post('boxes/{id}/addMaterial', [BoxController::class, 'addMaterial'])->middleware('auth:sanctum');
-
 Route::apiResources([
     'users' => UserController::class,
     'boxes' => BoxController::class,

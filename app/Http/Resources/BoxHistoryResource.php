@@ -24,7 +24,9 @@ class BoxHistoryResource extends JsonResource
             "pc" => $this->pc,
             "length" => $this->length,
             "remainder" => $this->box->remainder,
-            "commentary" => $this->commentary
+            "commentary" => $this->commentary,
+            "created_at" => $this->created_at,
+            "updated_at" => $this->updated_at,
         ];
     }
 }

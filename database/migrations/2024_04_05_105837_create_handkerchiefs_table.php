@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('handkerchiefs', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->integer('all_products');
-            $table->integer('all_products');
+            $table->string('name')->unique();
+            $table->string('sort_plane')->unique();
+            $table->string('all_products')->default(0);
+            $table->string('finished_products')->default(0);
+            $table->string('defective_products')->default(0);
             $table->timestamps();
         });
     }

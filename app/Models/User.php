@@ -51,4 +51,9 @@ class User extends Authenticatable
     {
         return $this->HasMany(BoxHistory::class);
     }
+
+    public function handkerchiefHistoriy():HasMany
+    {
+        return $this->HasMany(HandkerchiefHistory::class);
+    }
 }

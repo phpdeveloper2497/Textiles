@@ -29,7 +29,7 @@ class StoreBoxHistoryRequest extends FormRequest
             ],
             "user_id" =>['required','exists:users,id','numeric'],
             "in_storage" => ['required','boolean'],
-            "out_storage" => "required",
+            "out_storage" => ['required','boolean'],
             "returned" => ['required','boolean'],
             "per_pc_meter" => "required|numeric",
             "pc" => "required|numeric",

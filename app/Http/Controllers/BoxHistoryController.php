@@ -8,6 +8,8 @@ use App\Models\Box;
 use App\Models\BoxHistory;
 use App\Http\Requests\StoreBoxHistoryRequest;
 use App\Http\Requests\UpdateBoxHistoryRequest;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class BoxHistoryController extends Controller
 {
@@ -16,10 +18,28 @@ class BoxHistoryController extends Controller
         $this->middleware("auth:sanctum");
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $boxhistory = BoxHistory::all();
-        return $this->reply(BoxHistoryResource::collection($boxhistory));
+//        dd($request);
+        $boxhistory = BoxHistory::with('box');
+
+        if ($request->filled('in_storage')) {
+            $boxhistory->where("in_storage", $request->get('in_storage'));
+        }
+        if ($request->filled('out_storage')) {
+            $boxhistory->where("out_storage", $request->get('out_storage'));
+        }
+        if ($request->filled('returned')) {
+            $boxhistory->where("returned", $request->get('returned'));
+        }
+        if($request->filled('created_at')){
+
+//            $boxhistory->whereDate('created_at', '=', Carbon::today()->toDateString());
+        }
+//TODO: vaqt bo'yicha filter kk
+        $history = $boxhistory->orderBy('created_at ')->paginate(15);
+
+        return $this->reply(BoxHistoryResource::collection($history));
     }
 
     /**
@@ -51,15 +71,30 @@ class BoxHistoryController extends Controller
                 return 'the product is not enough';
             }
         }
-        return $this->success('Boxhistory done successfully', new StoreBoxHistoryResource($boxhistory));
+        return $this->success('Box history done successfully', new StoreBoxHistoryResource($boxhistory));
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(BoxHistory $boxHistory)
+    public function show(Request $request, BoxHistory $boxHistory)
     {
+//        dd($request);
+//        dd($boxHistory->box_id);
+        if ( $boxHistory->box_id === $request->box->id) {
+            if ($request->filled('in_storage')) {
+                $boxHistory->where("in_storage", $request->get('in_storage'));
+            }
+            if ($request->filled('out_storage')) {
+                $boxHistory->where("out_storage", $request->get('out_storage'));
+            }
+            if ($request->filled('returned')) {
+                $boxHistory->where("returned", $request->get('returned'));
+            }
+        }
+        $history = $boxHistory->orderBy('out_storage')->paginate(15);
 
+        return $this->reply(BoxHistoryResource::collection($history));
     }
 
     /**

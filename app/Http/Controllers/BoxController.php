@@ -54,7 +54,7 @@ class BoxController extends Controller
             if ($request->returned == 1) {
                 return StoreBoxHistoryResource::collection($box->boxhistory()->where('returned', '=', true)->get());
             }
-        return new BoxResource($box);
+            return new BoxResource($box);
         }
     }
 

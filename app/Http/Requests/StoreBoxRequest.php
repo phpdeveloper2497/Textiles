@@ -24,7 +24,7 @@ class StoreBoxRequest extends FormRequest
         return [
             'name' => 'required',
             'per_liner_meter' => 'required',
-            'sort_by' => 'required|numeric',
+            'sort_by' => 'required|string',
             ];
     }
 }

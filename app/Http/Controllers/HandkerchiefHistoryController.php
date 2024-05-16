@@ -72,7 +72,7 @@ class HandkerchiefHistoryController extends Controller
 
         $current_time = Carbon::now();
         $target_time_end_day = Carbon::today()->setHour(23)->setMinute(30)->setSecond(0);
-        $target_time_start_day = Carbon::today()->setHour(7)->setMinute(30)->setSecond(0);
+        $target_time_start_day = Carbon::today()->setHour(7)->setMinute(0)->setSecond(0);
 
         if ($current_time >= $target_time_start_day && $current_time <= $target_time_end_day) {
             if ($request->storage_in === true) {
@@ -85,7 +85,7 @@ class HandkerchiefHistoryController extends Controller
 
             return new HandkerchiefHistoryResource($handkerchiefHistoriy);
         } else {
-            return "Hozir hisobot kiritish vaqtidan tashqari vaqt, hisobot davri 7:30 dan 23:30 gacha ";
+            return "Hozir hisobot kiritish vaqtidan tashqari vaqt, hisobot davri 7:00 dan 23:30 gacha ";
         }
     }
 

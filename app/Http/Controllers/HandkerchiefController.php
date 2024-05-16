@@ -29,11 +29,10 @@ class HandkerchiefController extends Controller
     public function store(StoreHandkerchiefRequest $request)
     {
         $handkerchief = Handkerchief::create([
+            "box_id" => $request->box_id,
             "name" => $request->name,
             "sort_plane" => $request->sort_plane,
-
         ]);
-//        return StoreHandkerchiefResource::collection($handkerchief);
         return $this->reply($handkerchief);
     }
 
@@ -42,10 +41,9 @@ class HandkerchiefController extends Controller
      */
     public function show(Request $request, Handkerchief $handkerchief)
     {
-//        dd($handkerchief);
-        if ($request->filled('finished_products')) {
-            $handkerchief->where('finished_products', $request->get('finished_products'));
-        }
+//        if ($request->filled('finished_products')) {
+//            $handkerchief->where('finished_products', $request->get('finished_products'));
+//        }
         $history = $handkerchief->orderBy('finished_products');
         return $this->reply($history);
     }
@@ -53,7 +51,9 @@ class HandkerchiefController extends Controller
 
     public function update(UpdateHandkerchiefRequest $request, Handkerchief $handkerchief)
     {
-        //
+            $handkerchief->name = $request->name;
+            $handkerchief->sort_plane = $request->sort_plane;
+            $handkerchief->save();
     }
 
     /**

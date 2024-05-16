@@ -15,6 +15,7 @@ class HandkerchiefHistoryResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
             'handkerchief_id' => $this->handkerchief_id,
             'user_id' => $this->user_id,
             'all_products' => $this->all_products,

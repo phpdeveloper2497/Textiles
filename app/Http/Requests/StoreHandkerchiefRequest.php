@@ -22,6 +22,11 @@ class StoreHandkerchiefRequest extends FormRequest
     public function rules(): array
     {
         return [
+            "box_id" =>[
+                "required",
+                "exists:boxes,id",
+                "numeric"
+            ],
             "name" => ["required","string"],
             "sort_plane" => ["required","string"]
         ];

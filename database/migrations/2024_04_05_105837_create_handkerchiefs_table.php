@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('handkerchiefs', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('box_id')->constrained();
             $table->string('name')->unique();
             $table->string('sort_plane')->unique();
             $table->string('all_products')->default(0);

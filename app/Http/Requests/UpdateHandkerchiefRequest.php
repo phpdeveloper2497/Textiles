@@ -11,7 +11,7 @@ class UpdateHandkerchiefRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,8 @@ class UpdateHandkerchiefRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "name" => ["required","string"],
+            "sort_plane" => ["required","string"]
         ];
     }
 }

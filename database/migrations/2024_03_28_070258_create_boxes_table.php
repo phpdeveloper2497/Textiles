@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('boxes', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique();
             $table->float('per_liner_meter');
             $table->integer('remainder')->default(0);
-            $table->string('sort_by');
+            $table->string('sort_by')->unique();
             $table->timestamps();
         });
     }

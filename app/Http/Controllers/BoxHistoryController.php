@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\BoxHistoryResource;
 use App\Http\Resources\StoreBoxHistoryResource;
+use App\Jobs\Recalculate;
 use App\Models\Box;
 use App\Models\BoxHistory;
 use App\Http\Requests\StoreBoxHistoryRequest;
@@ -32,12 +33,18 @@ class BoxHistoryController extends Controller
         if ($request->filled('returned')) {
             $boxhistory->where("returned", $request->get('returned'));
         }
-        if($request->filled('created_at')){
-
-//            $boxhistory->whereDate('created_at', '=', Carbon::today()->toDateString());
+        if ($request->sortBy && in_array($request->sortBy, ['id', 'created_at'])) {
+            $sortBy = $request->sortBy;
+        } else {
+            $sortBy = 'id';
         }
-//TODO: vaqt bo'yicha filter kk
-        $history = $boxhistory->orderBy('created_at ')->paginate(15);
+        if ($request->sortOrder && in_array($request->sortOrder, ['asc', 'desc'])) {
+            $sortOrder = $request->sortOrder;
+        } else {
+            $sortOrder = 'desc';
+        }
+
+        $history = $boxhistory->orderBy($sortBy, $sortOrder)->paginate(15);
 
         return $this->reply(BoxHistoryResource::collection($history));
     }
@@ -58,20 +65,34 @@ class BoxHistoryController extends Controller
             "length" => $request->per_pc_meter * $request->pc,
             "commentary" => $request->commentary
         ]);
-        if ($request->in_storage === true || $request->returned === true) {
-            Box::query()->where('id', '=', $request->box_id)->first()->increment('remainder', $boxhistory->length);
+
+        $current_time = Carbon::now();
+        $target_time_end_day = Carbon::today()->setHour(23)->setMinute(30)->setSecond(0);
+        $target_time_start_day = Carbon::today()->setHour(7)->setMinute(30)->setSecond(0);
+
+        if ($current_time >= $target_time_start_day && $current_time <= $target_time_end_day) {
+            if ($request->in_storage === true) {
+                Box::query()->where('id', '=', $request->box_id)->first()->increment('remainder', $boxhistory->length);
+            }
+            if ($request->returned === true) {
+                Box::query()->where('id', '=', $request->box_id)->first()->increment('remainder', $boxhistory->length);
+            }
+            if ($request->out_storage === true && $request->per_pc_meter) {
+                $box = Box::query()->where('id', '=', $request->box_id)->first();
+                if ($box->remainder > 0 && $boxhistory->length <= $box->remainder) {
+                    $box->remainder -= $boxhistory->length;
+                    $box->save();
+                } else {
+                    return "Omborda siz istagan materialdan yetarlicha emas. Ushbu materialdan mavjud uzunlik $box->remainder metr";
+                }
+            }
+//            Recalculate::dispatch($boxhistory);
+            return $this->success('Box history done successfully', new StoreBoxHistoryResource($boxhistory));
+        } else {
+            return "Hozir hisobot kiritish vaqtidan tashqari vaqt, hisobot davri 7:30 dan 23:30 gacha ";
         }
 
-        if ($request->out_storage === true) {
-            $box = Box::query()->where('id', '=', $request->box_id)->first();
-            if ($box->remainder > 0 && $boxhistory->length <= $box->remainder) {
-                $box->remainder -= $boxhistory->length;
-                $box->save();
-            } else {
-                return 'the product is not enough';
-            }
-        }
-        return $this->success('Box history done successfully', new StoreBoxHistoryResource($boxhistory));
+
     }
 
     /**
@@ -79,9 +100,7 @@ class BoxHistoryController extends Controller
      */
     public function show(Request $request, BoxHistory $boxHistory)
     {
-//        dd($request);
-//        dd($boxHistory->box_id);
-        if ( $boxHistory->box_id === $request->box->id) {
+        if ($boxHistory->box_id === $request->box->id) {
             if ($request->filled('in_storage')) {
                 $boxHistory->where("in_storage", $request->get('in_storage'));
             }
@@ -92,7 +111,17 @@ class BoxHistoryController extends Controller
                 $boxHistory->where("returned", $request->get('returned'));
             }
         }
-        $history = $boxHistory->orderBy('out_storage')->paginate(15);
+        if ($request->sortBy && in_array($request->sortBy, ['id', 'created_at'])) {
+            $sortBy = $request->sortBy;
+        } else {
+            $sortBy = 'id';
+        }
+        if ($request->sortOrder && in_array($request->sortOrder, ['asc', 'desc'])) {
+            $sortOrder = $request->sortOrder;
+        } else {
+            $sortOrder = 'desc';
+        }
+        $history = $boxHistory->orderBy($sortBy, $sortOrder)->paginate(15);
 
         return $this->reply(BoxHistoryResource::collection($history));
     }

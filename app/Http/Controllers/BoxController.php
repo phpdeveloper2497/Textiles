@@ -43,7 +43,7 @@ class BoxController extends Controller
      */
     public function show(ShowBoxRequest $request, Box $box)
     {
-        if ($box->boxHistory->count() > 0) {
+//        if ($box->boxHistory->count() > 0) {
 
             if ($request->in_storage == 1) {
                 return StoreBoxHistoryResource::collection($box->boxhistory()->where('in_storage', '=', true)->get());
@@ -55,7 +55,7 @@ class BoxController extends Controller
                 return StoreBoxHistoryResource::collection($box->boxhistory()->where('returned', '=', true)->get());
             }
             return new BoxResource($box);
-        }
+//        }
     }
 
     /**

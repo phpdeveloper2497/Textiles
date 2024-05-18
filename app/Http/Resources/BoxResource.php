@@ -15,6 +15,7 @@ class BoxResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            "id" => $this->id,
             "name" =>$this->name,
             "per_liner_meter" =>$this->per_liner_meter,
             "remainder" =>$this->remainder,

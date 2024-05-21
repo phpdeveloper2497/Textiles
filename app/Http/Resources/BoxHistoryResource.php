@@ -15,6 +15,7 @@ class BoxHistoryResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            "id" => $this->id,
             "box_id" => $this->box_id,
             "user_id" => $this->user_id,
             "in_storage" => $this->in_storage,

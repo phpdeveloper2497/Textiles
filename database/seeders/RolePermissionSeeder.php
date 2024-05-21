@@ -27,7 +27,7 @@ class RolePermissionSeeder extends Seeder
             Permission::create(['name' => 'user:viewAny']),
             Permission::create(['name' => 'user:view']),
             Permission::create(['name' => 'user:create']),
-            Permission::create(['name' => 'user:update',]),
+            Permission::create(['name' => 'user:update']),
             Permission::create(['name' => 'user:delete']),
             Permission::create(['name' => 'user:restore']),
         ];

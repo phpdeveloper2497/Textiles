@@ -33,7 +33,16 @@ class BoxHistoryController extends Controller
         if ($request->filled('returned')) {
             $boxhistory->where("returned", $request->get('returned'));
         }
-        if ($request->sortBy && in_array($request->sortBy, ['id', 'created_at'])) {
+        if ($request->filled('box_id')) {
+            $boxhistory->where("box_id", $request->get('box_id'));
+        }
+        if ($request->from || $request->to) {
+            $startDate = Carbon::parse($request->from)->startOfDay();
+            $endDate = Carbon::parse($request->to)->endOfDay();
+            $boxhistory->whereBetween('created_at', [$startDate, $endDate])->get();
+        }
+
+        if($request->sortBy && in_array($request->sortBy, ['id', 'created_at'])) {
             $sortBy = $request->sortBy;
         } else {
             $sortBy = 'id';
@@ -44,7 +53,7 @@ class BoxHistoryController extends Controller
             $sortOrder = 'desc';
         }
 
-        $history = $boxhistory->orderBy($sortBy, $sortOrder)->paginate(15);
+        $history = $boxhistory->orderBy($sortBy, $sortOrder)->paginate(20);
 
         return $this->reply(BoxHistoryResource::collection($history));
     }

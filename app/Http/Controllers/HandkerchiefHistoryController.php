@@ -41,8 +41,7 @@ class HandkerchiefHistoryController extends Controller
             $handkerchiefHistoriy->whereBetween('created_at', [$startDate, $endDate])->get();
         }
 
-        if ($request->sortBy && in_array($request->sortBy, ['id', 'cr\1
-        /eated_at'])) {
+        if($request->sortBy && in_array($request->sortBy, ['id', 'created_at'])) {
             $sortBy = $request->sortBy;
         } else {
             $sortBy = 'id';
@@ -103,6 +102,7 @@ class HandkerchiefHistoryController extends Controller
         if ($request->user_id) {
             $handkerchiefHistoriy->where('user_id', $request->user_id);
         }
+
         if ($request->sortOrder && in_array($request->sortOrder, ['asc', 'desc'])) {
             $sortOrder = $request->sortOrder;
         } else {

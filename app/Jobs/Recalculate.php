@@ -41,13 +41,12 @@ class Recalculate implements ShouldQueue
 //
 //        $current_time = Carbon::now();
 //        $target_time_end_day = Carbon::today()->setHour(23)->setMinute(30)->setSecond(0);
-//        $target_time_start_day = Carbon::today()->setHour(7)->setMinute(30)->setSecond(0);
-//        if ($current_time >= $target_time_end_day && $current_time < Carbon::now()->endOfDay()) {
-//            Box::query()->where('id', '=', $request->box_id)->first()->increment('remainder', $boxhistory->length);
-//
+//        $target_time_start_day = Carbon::today()->setHour(7)->setMinute(00)->setSecond(0);
+//        if ($current_time >= $target_time_end_day && $current_time < $target_time_start_day) {
+//            Box::query()->where('id', '=', $request->box_id)->first()->increment('remainder',  $in_progress_material);
 //        }
 //        if ($current_time = $target_time_start_day) {
-//            Box::query()->where('id', '=', $request->box_id)->first()->decrement('remainder', $boxhistory->length);
+//            Box::query()->where('id', '=', $request->box_id)->first()->decrement('remainder',  $in_progress_material);
 //
 //        }
     }

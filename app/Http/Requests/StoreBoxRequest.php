@@ -22,9 +22,18 @@ class StoreBoxRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|unique',
+            'name' => 'required|string|unique:boxes,name',
             'per_liner_meter' => 'required',
-            'sort_by' => 'required|string|unique',
+            'sort_by' => 'required|string|unique:boxes,sort_by',
             ];
+
+    }
+
+    public function messages()
+    {
+        return [
+            "name.unique" => "Bu nom allaqachon kiritilgan",
+            "sort_by.unique" => "Bu nomli joy allaqachon kiritilgan"
+        ];
     }
 }

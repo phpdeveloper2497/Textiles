@@ -81,10 +81,7 @@ class BoxController extends Controller
 
     public function workshop($id)
     {
-//        $box = Box::find(1);
-//        return $box->boxHistories->where("created_at", Carbon::now()->startOfDay())->sum('length');
         $box = Box::find($id);
-        return $box->boxHistories->where("created_at", Carbon::now()->startOfDay())->sum('length');
-
+        return $box->boxHistories->where("created_at", Carbon::now()->startOfDay())->first()->length;
     }
 }

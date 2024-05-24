@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ShowBoxHistoryRequest;
 use App\Http\Resources\BoxHistoryResource;
 use App\Http\Resources\StoreBoxHistoryResource;
 use App\Jobs\Recalculate;
@@ -108,7 +109,8 @@ class BoxHistoryController extends Controller
      */
     public function show(Request $request, BoxHistory $boxHistory)
     {
-        if ($boxHistory->box_id === $request->box->id) {
+//        dd($request->box->id);
+        if ($boxHistory->box_id === $request->id) {
             if ($request->filled('in_storage')) {
                 $boxHistory->where("in_storage", $request->get('in_storage'));
             }

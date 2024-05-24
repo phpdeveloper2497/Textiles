@@ -32,8 +32,8 @@ class StoreBoxRequest extends FormRequest
     public function messages()
     {
         return [
-            "name.unique" => "Bu nom allaqachon kiritilgan",
-            "sort_by.unique" => "Bu nomli joy allaqachon kiritilgan"
+            "name.unique" => "Bu nom allaqachon yaratilgan",
+            "sort_by.unique" => "Bu nomli joy allaqachon yaratilgan"
         ];
     }
 }

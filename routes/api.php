@@ -30,6 +30,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('logout', 'logout')->middleware('auth:sanctum');
 });
 
+Route::get('boxes/{id}/workshop',[BoxController::class,'workshop']);
 Route::post('handkerchief-history/{handkerchief}/sold',[HandkerchiefHistoryController::class,'sold']);
 
 Route::apiResources([

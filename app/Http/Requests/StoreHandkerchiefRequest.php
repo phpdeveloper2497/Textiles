@@ -27,8 +27,15 @@ class StoreHandkerchiefRequest extends FormRequest
                 "exists:boxes,id",
                 "numeric"
             ],
-            "name" => ["required","string"],
-            "sort_plane" => ["required","string"]
+            "name" => ["required","string","unique:handkerchiefs,name"],
+            "sort_plane" => ["required","string","unique:handkerchiefs,sort_plane"],
+        ];
+    }
+    public function messages()
+    {
+        return [
+            "name.unique" => "Bu nom allaqachon yaratilgan",
+            "sort_plane.unique" => "Bu nomli joy allaqachon yaratilgan"
         ];
     }
 }

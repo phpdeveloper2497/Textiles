@@ -21,7 +21,6 @@ class BoxHistoryController extends Controller
 
     public function index(Request $request)
     {
-//        dd($request);
         $boxhistory = BoxHistory::with('box');
 
         if ($request->filled('in_storage')) {
@@ -76,8 +75,8 @@ class BoxHistoryController extends Controller
         ]);
 
         $current_time = Carbon::now();
-        $target_time_end_day = Carbon::today()->setHour(23)->setMinute(30)->setSecond(0);
-        $target_time_start_day = Carbon::today()->setHour(7)->setMinute(30)->setSecond(0);
+        $target_time_end_day = Carbon::today()->setHour(22)->setMinute(59)->setSecond(0);
+        $target_time_start_day = Carbon::today()->setHour(7)->setMinute(00)->setSecond(0);
 
         if ($current_time >= $target_time_start_day && $current_time <= $target_time_end_day) {
             if ($request->in_storage === true) {
@@ -86,7 +85,7 @@ class BoxHistoryController extends Controller
             if ($request->returned === true) {
                 Box::query()->where('id', '=', $request->box_id)->first()->increment('remainder', $boxhistory->length);
             }
-            if ($request->out_storage === true && $request->per_pc_meter) {
+            if ($request->out_storage === true && $request->per_pc_meter && $request->pc) {
                 $box = Box::query()->where('id', '=', $request->box_id)->first();
                 if ($box->remainder > 0 && $boxhistory->length <= $box->remainder) {
                     $box->remainder -= $boxhistory->length;
@@ -98,7 +97,7 @@ class BoxHistoryController extends Controller
 //            Recalculate::dispatch($boxhistory);
             return $this->success('Box history done successfully', new StoreBoxHistoryResource($boxhistory));
         } else {
-            return "Hozir hisobot kiritish vaqtidan tashqari vaqt, hisobot davri 7:30 dan 23:30 gacha ";
+            return "Hozir hisobot kiritish vaqtidan tashqari vaqt, hisobot davri 7:00 dan 22:59 gacha ";
         }
 
 

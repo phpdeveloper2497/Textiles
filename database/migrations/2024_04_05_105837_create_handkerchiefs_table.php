@@ -16,9 +16,10 @@ return new class extends Migration
             $table->foreignId('box_id')->constrained();
             $table->string('name')->unique();
             $table->string('sort_plane')->unique();
-            $table->string('all_products')->default(0);
-            $table->string('finished_products')->default(0);
-            $table->string('defective_products')->default(0);
+            $table->integer('all_products')->default(0);
+            $table->integer('finished_products')->default(0);
+            $table->integer('defective_products')->default(0);
+            $table->integer('not_packaged')->nullable()->default(0);
             $table->timestamps();
         });
     }

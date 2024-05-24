@@ -11,6 +11,7 @@ use App\Models\Box;
 use App\Http\Requests\StoreBoxRequest;
 use App\Http\Requests\UpdateBoxRequest;
 use App\Models\BoxHistory;
+use Carbon\Carbon;
 
 class BoxController extends Controller
 {
@@ -46,13 +47,13 @@ class BoxController extends Controller
 //        if ($box->boxHistory->count() > 0) {
 
             if ($request->in_storage == 1) {
-                return StoreBoxHistoryResource::collection($box->boxhistory()->where('in_storage', '=', true)->get());
+                return StoreBoxHistoryResource::collection($box->boxHistories()->where('in_storage', '=', true)->get());
             }
             if ($request->out_storage == 1) {
-                return StoreBoxHistoryResource::collection($box->boxhistory()->where('out_storage', '=', true)->get());
+                return StoreBoxHistoryResource::collection($box->boxHistories()->where('out_storage', '=', true)->get());
             }
             if ($request->returned == 1) {
-                return StoreBoxHistoryResource::collection($box->boxhistory()->where('returned', '=', true)->get());
+                return StoreBoxHistoryResource::collection($box->boxHistories()->where('returned', '=', true)->get());
             }
             return new BoxResource($box);
 //        }
@@ -76,5 +77,14 @@ class BoxController extends Controller
     {
         $box->delete();
         return $this->success("Box $box->id deleted");
+    }
+
+    public function workshop($id)
+    {
+//        $box = Box::find(1);
+//        return $box->boxHistories->where("created_at", Carbon::now()->startOfDay())->sum('length');
+        $box = Box::find($id);
+        return $box->boxHistories->where("created_at", Carbon::now()->startOfDay())->sum('length');
+
     }
 }

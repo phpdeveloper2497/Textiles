@@ -13,7 +13,7 @@ class Box extends Model
 
     protected $fillable = ['name','per_liner_meter','remainder','sort_by'];
 
-    public function boxHistory():HasMany
+    public function boxHistories():HasMany
     {
         return $this->HasMany(BoxHistory::class);
     }

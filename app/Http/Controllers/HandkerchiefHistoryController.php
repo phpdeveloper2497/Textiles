@@ -66,11 +66,11 @@ class HandkerchiefHistoryController extends Controller
             'storage_in' => $request->storage_in,
             'all_products' => $request->all_products,
             'finished_products' => $request->finished_products,
-            'defective_products' => $request->defective_products,
+            'defective_products' => $request->defective_products
         ]);
 
         $current_time = Carbon::now();
-        $target_time_end_day = Carbon::today()->setHour(23)->setMinute(30)->setSecond(0);
+        $target_time_end_day = Carbon::today()->setHour(22)->setMinute(59)->setSecond(0);
         $target_time_start_day = Carbon::today()->setHour(7)->setMinute(0)->setSecond(0);
 
         if ($current_time >= $target_time_start_day && $current_time <= $target_time_end_day) {
@@ -79,12 +79,13 @@ class HandkerchiefHistoryController extends Controller
                 $handkerchief->all_products += $handkerchiefHistoriy->all_products;
                 $handkerchief->finished_products += $handkerchiefHistoriy->finished_products;
                 $handkerchief->defective_products += $handkerchiefHistoriy->defective_products;
+                $handkerchief->not_packaged += $handkerchief->all_products - $handkerchief->finished_products - $handkerchief->defective_products;
                 $handkerchief->save();
             }
 
             return new HandkerchiefHistoryResource($handkerchiefHistoriy);
         } else {
-            return "Hozir hisobot kiritish vaqtidan tashqari vaqt, hisobot davri 7:00 dan 23:30 gacha ";
+            return "Hozir hisobot kiritish vaqtidan tashqari vaqt, hisobot davri 7:00 dan 22:59 gacha ";
         }
     }
 
@@ -135,10 +136,10 @@ class HandkerchiefHistoryController extends Controller
         $handkerchiefHistoriy = HandkerchiefHistory::create([
             'user_id' => $request->user_id,
             'handkerchief_id' => $request->handkerchief_id,
-            'storage_in' => $request->storage_in,
-            'all_products' => $request->all_products,
-            'finished_products' => $request->finished_products,
-            'defective_products' => $request->defective_products,
+            'storage_in' => 0,
+            'all_products' => 0,
+            'finished_products' => 0,
+            'defective_products' => 0,
             "sold_out" => $request->sold_out,
             "sold_products" => $request->sold_products,
             "sold_defective_products" => $request->sold_defective_products]);

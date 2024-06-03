@@ -35,7 +35,9 @@ class StoreHandkerchiefRequest extends FormRequest
     {
         return [
             "name.unique" => "Bu nom allaqachon yaratilgan",
-            "sort_plane.unique" => "Bu nomli joy allaqachon yaratilgan"
+            "sort_plane.unique" => "Omborxonada bunday nomli joy allaqachon yaratilgan",
+            'sort_plane.string' => 'Saralash boʻyicha beriladigan maydon qatori so\'z bo\'lishi kerak.',
+
         ];
     }
 }

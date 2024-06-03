@@ -48,4 +48,8 @@ class AuthController extends Controller
         return 'User logged out';
     }
 
+    public function me(Request $request)
+    {
+        return response()->json($request->user());
+    }
 }

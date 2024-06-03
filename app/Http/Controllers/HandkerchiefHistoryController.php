@@ -10,6 +10,7 @@ use App\Http\Requests\StoreHandkerchiefHistoryRequest;
 use App\Http\Requests\UpdateHandkerchiefHistoryRequest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class HandkerchiefHistoryController extends Controller
 {
@@ -82,7 +83,6 @@ class HandkerchiefHistoryController extends Controller
                 $handkerchief->not_packaged += $handkerchief->all_products - $handkerchief->finished_products - $handkerchief->defective_products;
                 $handkerchief->save();
             }
-
             return new HandkerchiefHistoryResource($handkerchiefHistoriy);
         } else {
             return "Hozir hisobot kiritish vaqtidan tashqari vaqt, hisobot davri 7:00 dan 22:59 gacha ";
@@ -92,25 +92,58 @@ class HandkerchiefHistoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request, HandkerchiefHistory $handkerchiefHistoriy)
+//    public function show(Request $request, HandkerchiefHistory $handkerchiefHistoriy) :LengthAwarePaginator
+//    {
+//        if ($request->filled('storage_in')) {
+//            $handkerchiefHistoriy->where("storage_in", $request->get('storage_in'));
+//        }
+//        if ($request->filled('sold_out')) {
+//            $handkerchiefHistoriy->where('sold_out', $request->get('sold_out'));
+//        }
+//        if ($request->user_id) {
+//            $handkerchiefHistoriy->where('user_id', $request->user_id);
+//        }
+//        if($request->sortBy && in_array($request->sortBy, ['id', 'created_at'])) {
+//            $sortBy = $request->sortBy;
+//        } else {
+//            $sortBy = 'id';
+//        }
+//        if ($request->sortOrder && in_array($request->sortOrder,['asc', 'desc'])) {
+//            $sortOrder = $request->sortOrder;
+//        } else {
+//            $sortOrder = 'desc';
+//        }
+//        $history = $handkerchiefHistoriy->orderBy($sortBy,$sortOrder)->paginate(15);
+//        return new HandkerchiefHistoryResource($history);
+//    }
+
+    public function show(Request $request, HandkerchiefHistory $handkerchiefHistoriy) : LengthAwarePaginator
     {
+        $query = $handkerchiefHistoriy->newQuery();
+
         if ($request->filled('storage_in')) {
-            $handkerchiefHistoriy->where("storage_in", $request->get('storage_in'));
+            $query->where("storage_in", $request->get('storage_in'));
         }
         if ($request->filled('sold_out')) {
-            $handkerchiefHistoriy->where('sold_out', $request->get('sold_out'));
+            $query->where('sold_out', $request->get('sold_out'));
         }
-        if ($request->user_id) {
-            $handkerchiefHistoriy->where('user_id', $request->user_id);
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->get('user_id'));
         }
 
-        if ($request->sortOrder && in_array($request->sortOrder, ['asc', 'desc'])) {
-            $sortOrder = $request->sortOrder;
-        } else {
+        $sortBy = $request->get('sortBy', 'id');
+        $sortOrder = $request->get('sortOrder', 'desc');
+
+        if (!in_array($sortBy, ['id', 'created_at'])) {
+            $sortBy = 'id';
+        }
+        if (!in_array($sortOrder, ['asc', 'desc'])) {
             $sortOrder = 'desc';
         }
-        $history = $handkerchiefHistoriy->orderBy($sortOrder)->paginate(15);
-        return new HandkerchiefHistoryResource($history);
+
+        $history = $query->orderBy($sortBy, $sortOrder)->paginate(15);
+
+        return $history;
     }
 
 

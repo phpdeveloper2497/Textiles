@@ -33,7 +33,8 @@ class StoreBoxRequest extends FormRequest
     {
         return [
             "name.unique" => "Bu nom allaqachon yaratilgan",
-            "sort_by.unique" => "Bu nomli joy allaqachon yaratilgan"
+            "sort_by.unique" => "Omborxonada bunday nomli joy allaqachon yaratilgan",
+            'sort_by.string' => 'Saralash boʻyicha beriladigan maydon qatori so\'z bo\'lishi kerak.'
         ];
     }
 }

@@ -24,10 +24,13 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //});
 
+Route::post('login',[AuthController::class,'login']);
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
     Route::post('register', 'register');
+    Route::get('me', 'me')->middleware('auth:sanctum');
     Route::post('logout', 'logout')->middleware('auth:sanctum');
+
 });
 
 Route::get('boxes/{id}/workshop',[BoxController::class,'workshop']);

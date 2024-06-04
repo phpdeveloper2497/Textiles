@@ -25,6 +25,7 @@ class StoreBoxRequest extends FormRequest
             'name' => 'required|string|unique:boxes,name',
             'per_liner_meter' => 'required',
             'sort_by' => 'required|string|unique:boxes,sort_by',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
             ];
 
     }
@@ -34,7 +35,9 @@ class StoreBoxRequest extends FormRequest
         return [
             "name.unique" => "Bu nom allaqachon yaratilgan",
             "sort_by.unique" => "Omborxonada bunday nomli joy allaqachon yaratilgan",
-            'sort_by.string' => 'Saralash boʻyicha beriladigan maydon qatori so\'z bo\'lishi kerak.'
+            'sort_by.string' => 'Saralash boʻyicha beriladigan maydon qatori so\'z bo\'lishi kerak.',
+            "image.max" => "Rasm maydoni 1024 kilobaytdan oshmasligi kerak",
+            "image.mimes" => "Rasm jpeg,png,jpg,gif,svg formatlarida bo'lishi kerak"
         ];
     }
 }

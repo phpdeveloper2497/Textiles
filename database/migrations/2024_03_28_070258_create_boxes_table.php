@@ -16,7 +16,9 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->float('per_liner_meter');
             $table->integer('remainder')->default(0);
+            $table->string('image_path')->nullable();
             $table->string('sort_by')->unique();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

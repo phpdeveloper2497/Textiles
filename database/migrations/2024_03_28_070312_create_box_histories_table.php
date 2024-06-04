@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('pc');
             $table->integer('length');
             $table->text('commentary')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

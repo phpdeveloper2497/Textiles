@@ -22,6 +22,7 @@ return new class extends Migration
             $table->boolean('sold_out')->default(false);
             $table->integer('sold_products')->default(0);
             $table->integer('sold_defective_products')->default(0);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

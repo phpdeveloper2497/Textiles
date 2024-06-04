@@ -22,9 +22,21 @@ class UpdateBoxRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required',
-            'per_liner_meter' => 'required',
-            'sort_by' => 'required|numeric',
+//            'name' => 'required|string|unique:boxes,name',
+//            'per_liner_meter' => 'required',
+//            'sort_by' => 'required|string|unique:boxes,sort_by',
+//            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            "name.unique" => "Bu nom allaqachon yaratilgan",
+            "sort_by.unique" => "Omborxonada bunday nomli joy allaqachon yaratilgan",
+            'sort_by.string' => 'Saralanadigan maydon qatori so\'z bo\'lishi kerak.',
+            "image.max" => "Rasm maydoni 2 Mbdan oshmasligi kerak",
+            "image.mimes" => "Rasm jpeg,png,jpg,gif,svg formatlarida bo'lishi kerak"
         ];
     }
 }

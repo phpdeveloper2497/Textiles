@@ -12,6 +12,8 @@ use App\Http\Requests\StoreBoxRequest;
 use App\Http\Requests\UpdateBoxRequest;
 use App\Models\BoxHistory;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class BoxController extends Controller
 {
@@ -36,6 +38,14 @@ class BoxController extends Controller
             'per_liner_meter' => $request->get('per_liner_meter'),
             'sort_by' => $request->get('sort_by')
         ]);
+        if ($request->file('image')) {
+            $path = $request->file('image')->store('boxes/' . $box->id, 'public');
+
+           $box->image_path=$path;
+           $box->save();
+        };
+
+
         return $this->success('Box created successfully', $box);
     }
 
@@ -61,19 +71,31 @@ class BoxController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateBoxRequest $request, Box $box)
+    public function update(StoreBoxRequest $request, Box $box)
     {
-        if ($box) {
-            $box->name = $request->get('name');
-            $box->per_liner_meter = $request->get('per_liner_meter');
-            $box->sort_by = $request->get('sort_by');
-            $box->save();
-            return $this->success("$box->id box updated", $box);
-        }
+//        $box->name = $request->get('name');
+//        $box->per_liner_meter = $request->get('per_liner_meter');
+//        $box->sort_by = $request->get('sort_by');
+//
+//        if ($request->hasFile('image')) {
+//            if ($box->image_path) {
+//                Storage::delete($box->image_path);
+//            }
+//            $path = $request->file('image')->store('boxes/' . $box->id, 'public');
+//            $box->image_path = $path;
+//        }
+//        $box->update();
+//
+//        return $this->success("$box->id box updated", $box);
     }
 
     public function destroy(Box $box)
     {
+//        unlink('storage/' . $box->image_path);
+        Storage::disk('public')->delete("$box->image_path");
+
+        File::DeleteDirectory('storage/' . 'boxes/' . "$box->id");
+
         $box->delete();
         return $this->success("Box $box->id deleted");
     }

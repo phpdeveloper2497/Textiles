@@ -52,28 +52,51 @@ class BoxController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ShowBoxRequest $request, Box $box)
+    public function show(ShowBoxRequest $request , Box $box)
     {
-            if ($request->in_storage == 1) {
-                return StoreBoxHistoryResource::collection($box->boxHistories()->where('in_storage', '=', true)->get());
-            }
-            if ($request->out_storage == 1) {
-                return StoreBoxHistoryResource::collection($box->boxHistories()->where('out_storage', '=', true)->get());
-            }
-            if ($request->returned == 1) {
-                return StoreBoxHistoryResource::collection($box->boxHistories()->where('returned', '=', true)->get());
-            }
-            return StoreBoxHistoryResource::collection($box->boxHistories);
-//            return new BoxResource($box);
 
+        if ($request->in_storage == 1) {
+            return StoreBoxHistoryResource::collection($box->boxHistories()->where('in_storage', '=', true)->get());
+        }
+        if ($request->out_storage == 1) {
+            return StoreBoxHistoryResource::collection($box->boxHistories()->where('out_storage', '=', true)->get());
+        }
+        if ($request->returned == 1) {
+            return StoreBoxHistoryResource::collection($box->boxHistories()->where('returned', '=', true)->get());
+        }
+
+        // Box da per_pc_metr uzunlikdagi matodan qancha qolganligini ko'rsatish
+        $results = BoxHistory::select('box_id', 'per_pc_meter','length',
+            \DB::raw('SUM(CASE WHEN in_storage = true THEN pc ELSE 0 END) as total_pc_in_storage'),
+            \DB::raw('SUM(CASE WHEN out_storage = true THEN pc ELSE 0 END) as total_pc_out_storage')
+        )
+            ->where('box_id', $request->box->id)
+            ->groupBy('box_id', 'per_pc_meter','length')
+            ->get();
+
+        $finalResults = $results->map(function($result) {
+            $remaining_pc = $result->total_pc_in_storage - $result->total_pc_out_storage;
+            $length = $remaining_pc * $result->per_pc_meter ;
+
+            return [
+                'box_id' => $result->box_id,
+                'per_pc_meter' => $result->per_pc_meter,
+                'remaining_pc' => $remaining_pc,
+                'length' => $length
+            ];
+        });
+
+        return response()->json($finalResults);
     }
+
+
 
     /**
      * Update the specified resource in storage.
      */
     public function update(StoreBoxRequest $request, Box $box)
     {
-//        $box->name = $request->get('name');
+    //        $box->name = $request->get('name');
 //        $box->per_liner_meter = $request->get('per_liner_meter');
 //        $box->sort_by = $request->get('sort_by');
 //

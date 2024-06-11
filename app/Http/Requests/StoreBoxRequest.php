@@ -25,7 +25,7 @@ class StoreBoxRequest extends FormRequest
             'name' => 'required|string|unique:boxes,name',
             'per_liner_meter' => 'required',
             'sort_by' => 'required|string|unique:boxes,sort_by',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:1024'
             ];
 
     }

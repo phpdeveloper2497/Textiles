@@ -11,13 +11,15 @@ use App\Models\Box;
 use App\Http\Requests\StoreBoxRequest;
 use App\Http\Requests\UpdateBoxRequest;
 use App\Models\BoxHistory;
+use App\Repositories\Contracts\BoxRepositoryInterface;
 use Carbon\Carbon;
+use http\Env\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 class BoxController extends Controller
 {
-    public function __construct()
+    public function __construct(private readonly BoxRepositoryInterface $boxRepository)
     {
         $this->middleware("auth:sanctum");
     }
@@ -33,28 +35,15 @@ class BoxController extends Controller
      */
     public function store(StoreBoxRequest $request)
     {
-        $box = Box::create([
-            'name' => $request->get('name'),
-            'per_liner_meter' => $request->get('per_liner_meter'),
-            'sort_by' => $request->get('sort_by')
-        ]);
-        if ($request->file('image')) {
-            $path = $request->file('image')->store('boxes/' . $box->id, 'public');
-
-           $box->image_path=$path;
-           $box->save();
-        };
-
-
-        return $this->success('Box created successfully', $box);
+        $this->boxRepository->create($request);
+        return $this->success('Box created successfully');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(ShowBoxRequest $request , Box $box)
+    public function show(ShowBoxRequest $request,Box $box)
     {
-
         if ($request->in_storage == 1) {
             return StoreBoxHistoryResource::collection($box->boxHistories()->where('in_storage', '=', true)->get());
         }
@@ -87,8 +76,6 @@ class BoxController extends Controller
             });
             return response()->json($finalResults);
     }
-
-
 
     /**
      * Update the specified resource in storage.

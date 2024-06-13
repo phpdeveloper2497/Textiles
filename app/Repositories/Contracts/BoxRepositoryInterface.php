@@ -2,6 +2,8 @@
 
 namespace App\Repositories\Contracts;
 
+use App\Http\Requests\StoreBoxRequest;
+use App\Models\Box;
 use JasonGuru\LaravelMakeRepository\Repository\BaseRepository;
 //use Your Model
 
@@ -10,7 +12,7 @@ use JasonGuru\LaravelMakeRepository\Repository\BaseRepository;
  */
 interface BoxRepositoryInterface
 {
-    public function create();
+    public function create(StoreBoxRequest $request);
    public function show();
    public function delete();
 }

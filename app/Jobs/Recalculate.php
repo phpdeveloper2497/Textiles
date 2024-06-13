@@ -48,7 +48,7 @@ class Recalculate implements ShouldQueue
             $in_progress = $plan_amount - $all_finished_products;
 //        dd($in_progress);   //23265 dona
             $in_progress_material = $in_progress / $box->per_liner_meter;
-//            dd($in_progress_material);   // 2501.6 metr
+//            dd($in_progress_material);   // 2501.6 meter
             // if(abs($in_progress) > 5 dona ){}
             if (abs($in_progress_material) > 1 ){
                 $boxhistory = BoxHistory::create([

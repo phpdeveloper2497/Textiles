@@ -80,23 +80,21 @@ class BoxHistoryController extends Controller
         $target_time_start_day = Carbon::today()->setHour(7)->setMinute(00)->setSecond(0);
 
         if ($current_time >= $target_time_start_day && $current_time <= $target_time_end_day) {
+            $box = Box::query()->where('id', '=', $request->box_id)->first();
             if ($request->in_storage === true) {
-                Box::query()->where('id', '=', $request->box_id)->first()->increment('remainder', $boxhistory->length);
+                $box->increment('remainder', $boxhistory->length);
             }
             if ($request->returned === true) {
-                Box::query()->where('id', '=', $request->box_id)->first()->increment('remainder', $boxhistory->length);
+                $box->increment('remainder', $boxhistory->length);
             }
-
-            $box = Box::query()->where('id', '=', $request->box_id)->first();
-            if ($request->out_storage === true /*&& $request->per_pc_meter == $box->per_pc_meter*/) {
-                if ($box->remainder > 0 && $box->remainder <= $box->boxHistories->first()->length) {
-                    $box->remainder -= $boxhistory->length;
-                    $box->save();
+            if ($request->out_storage === true) {
+                if ($box->remainder > 0 && $request->per_pc_meter == $box->per_pc_meter)  {
+                    $box->decrement('remainder', $boxhistory->length);
                 } else {
-                    return "Omborda siz istagan materialdan yetarlicha emas. Ushbu materialdan mavjud uzunlik $box->remainder metr";
+                    return "Omborda ushbu materialdan siz so'rayotgan o'lcham yoki so'ralayotgan miqdorda mavjud emas.Ombor holatiga qarang";
                 }
             }
-//            Recalculate::dispatch($boxhistory);
+            Recalculate::dispatch($boxhistory);
             return $this->success('Box history done successfully', new StoreBoxHistoryResource($boxhistory));
         } else {
             return "Hozir hisobot kiritish vaqtidan tashqari vaqt, hisobot davri 7:00 dan 22:59 gacha ";
@@ -107,52 +105,53 @@ class BoxHistoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ShowBoxHistoryRequest $request, BoxHistory $boxHistory)
-    {
-//        if ($boxHistory->box_id === $request->id) {
-//            if ($request->filled('in_storage')) {
-//                $boxHistory->where("in_storage", $request->get('in_storage'));
-//            }
-//            if ($request->filled('out_storage')) {
-//                $boxHistory->where("out_storage", $request->get('out_storage'));
-//            }
-//            if ($request->filled('returned')) {
-//                $boxHistory->where("returned", $request->get('returned'));
-//            }
-//                dd($boxHistory);
-//        }
-//        if ($request->sortBy && in_array($request->sortBy, ['id', 'created_at'])) {
-//            $sortBy = $request->sortBy;
-//        } else {
-//            $sortBy = 'id';
-//        }
-//        if ($request->sortOrder && in_array($request->sortOrder, ['asc', 'desc'])) {
-//            $sortOrder = $request->sortOrder;
-//        } else {
-//            $sortOrder = 'desc';
-//        }
-//        $history = $boxHistory->orderBy($sortBy, $sortOrder)->paginate(20);
-//
-//        return $this->reply(BoxHistoryResource::collection($history));
-    }
+
+    /* public function show(Request $request, BoxHistory $boxHistory)
+     {
+ //        if ($boxHistory->box_id === $request->id) {
+ //            if ($request->filled('in_storage')) {
+ //                $boxHistory->where("in_storage", $request->get('in_storage'));
+ //            }
+ //            if ($request->filled('out_storage')) {
+ //                $boxHistory->where("out_storage", $request->get('out_storage'));
+ //            }
+ //            if ($request->filled('returned')) {
+ //                $boxHistory->where("returned", $request->get('returned'));
+ //            }
+ //                dd($boxHistory);
+ //        }
+ //        if ($request->sortBy && in_array($request->sortBy, ['id', 'created_at'])) {
+ //            $sortBy = $request->sortBy;
+ //        } else {
+ //            $sortBy = 'id';
+ //        }
+ //        if ($request->sortOrder && in_array($request->sortOrder, ['asc', 'desc'])) {
+ //            $sortOrder = $request->sortOrder;
+ //        } else {
+ //            $sortOrder = 'desc';
+ //        }
+ //        $history = $boxHistory->orderBy($sortBy, $sortOrder)->paginate(20);
+ //
+ //        return $this->reply(BoxHistoryResource::collection($history));
+     }*/
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateBoxHistoryRequest $request, BoxHistory $boxHistory)
-    {
-        $boxHistory->update([
-            "box_id" => $request->box_id,
-            "user_id" => $request->user_id,
-            "in_storage" => $request->in_storage,
-            "out_storage" => $request->out_storage,
-            "returned" => $request->returned,
-            "per_pc_meter" => $request->per_pc_meter,
-            "pc" => $request->pc,
-            "commentary" => $request->commentary
-        ]);
-
-    }
+//    public function update(UpdateBoxHistoryRequest $request, BoxHistory $boxHistory)
+//    {
+//        $boxHistory->update([
+//            "box_id" => $request->box_id,
+//            "user_id" => $request->user_id,
+//            "in_storage" => $request->in_storage,
+//            "out_storage" => $request->out_storage,
+//            "returned" => $request->returned,
+//            "per_pc_meter" => $request->per_pc_meter,
+//            "pc" => $request->pc,
+//            "commentary" => $request->commentary
+//        ]);
+//
+//    }
 
     /**
      * Remove the specified resource from storage.

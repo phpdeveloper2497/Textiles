@@ -65,28 +65,27 @@ class BoxController extends Controller
             return StoreBoxHistoryResource::collection($box->boxHistories()->where('returned', '=', true)->get());
         }
 
-        // Box da per_pc_metr uzunlikdagi matodan qancha qolganligini ko'rsatish
-        $results = BoxHistory::select('box_id', 'per_pc_meter','length',
-            \DB::raw('SUM(CASE WHEN in_storage = true THEN pc ELSE 0 END) as total_pc_in_storage'),
-            \DB::raw('SUM(CASE WHEN out_storage = true THEN pc ELSE 0 END) as total_pc_out_storage')
-        )
-            ->where('box_id', $request->box->id)
-            ->groupBy('box_id', 'per_pc_meter','length')
-            ->get();
+        // Box da per_pc_meter uzunlikdagi matodan qancha qolganligini ko'rsatish
 
-        $finalResults = $results->map(function($result) {
-            $remaining_pc = $result->total_pc_in_storage - $result->total_pc_out_storage;
-            $length = $remaining_pc * $result->per_pc_meter ;
+            $results = BoxHistory::select('box_id', 'per_pc_meter',
+                \DB::raw('SUM(CASE WHEN in_storage = true THEN pc ELSE 0 END) as total_pc_in_storage'),
+                \DB::raw('SUM(CASE WHEN returned = true THEN pc ELSE 0 END) as total_pc_returned'),
+                \DB::raw('SUM(CASE WHEN out_storage = true THEN pc ELSE 0 END) as total_pc_out_storage')
+            )
+                ->where('box_id', $box->id)
+                ->groupBy('box_id', 'per_pc_meter')
+                ->get();
 
-            return [
-                'box_id' => $result->box_id,
-                'per_pc_meter' => $result->per_pc_meter,
-                'remaining_pc' => $remaining_pc,
-                'length' => $length
-            ];
-        });
+            $finalResults = $results->map(function ($result) {
+                $remaining_pc = $result->total_pc_in_storage + $result->total_pc_returned - $result->total_pc_out_storage;
 
-        return response()->json($finalResults);
+                return [
+                    'size_material' => $result->per_pc_meter,
+                    'quantity_rulon' => $remaining_pc,
+                    'length' => $remaining_pc *$result->per_pc_meter
+                ];
+            });
+            return response()->json($finalResults);
     }
 
 

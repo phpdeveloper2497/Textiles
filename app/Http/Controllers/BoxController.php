@@ -71,7 +71,7 @@ class BoxController extends Controller
                 return [
                     'size_material' => $result->per_pc_meter,
                     'quantity_rulon' => $remaining_pc,
-                    'length' => $remaining_pc *$result->per_pc_meter
+                    'length' => $remaining_pc * $result->per_pc_meter
                 ];
             });
             return response()->json($finalResults);
@@ -82,36 +82,32 @@ class BoxController extends Controller
      */
     public function update(StoreBoxRequest $request, Box $box)
     {
-    //        $box->name = $request->get('name');
-//        $box->per_liner_meter = $request->get('per_liner_meter');
-//        $box->sort_by = $request->get('sort_by');
-//
-//        if ($request->hasFile('image')) {
-//            if ($box->image_path) {
-//                Storage::delete($box->image_path);
-//            }
-//            $path = $request->file('image')->store('boxes/' . $box->id, 'public');
-//            $box->image_path = $path;
-//        }
-//        $box->update();
-//
 //        return $this->success("$box->id box updated", $box);
     }
 
     public function destroy(Box $box)
     {
-//        unlink('storage/' . $box->image_path);
-        Storage::disk('public')->delete("$box->image_path");
-
-        File::DeleteDirectory('storage/' . 'boxes/' . "$box->id");
-
-        $box->delete();
+        $this->boxRepository->delete($box);
         return $this->success("Box $box->id deleted");
     }
+
+    /**
+     * Jarayonda qolgan material uzunligini ko'rish mwtrda
+     */
 
     public function workshop($id)
     {
         $box = Box::find($id);
-        return $box->boxHistories->where("created_at", Carbon::now()->startOfDay())->first()->length;
+        $boxHistoryReport = $box->boxHistories->where("created_at", Carbon::now()->startOfDay())->first()->length;
+
+        if (!$box)
+        {
+            return response()->json(['error' => 'Box not found'], 404);
+        }
+        if (!$boxHistoryReport)
+        {
+            return response()->json(['error' => 'No box history found for today'], 404);
+        }
+        return $boxHistoryReport;
     }
 }

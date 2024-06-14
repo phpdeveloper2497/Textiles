@@ -2,6 +2,8 @@
 
 namespace App\Repositories\Contracts;
 
+use App\Models\BoxHistory;
+use http\Env\Request;
 use JasonGuru\LaravelMakeRepository\Repository\BaseRepository;
 //use Your Model
 
@@ -10,5 +12,5 @@ use JasonGuru\LaravelMakeRepository\Repository\BaseRepository;
  */
 interface BoxHistoryRepositoryInterface
 {
-    public function all();
+    public function all(Request $request, BoxHistory $boxhistory);
 }

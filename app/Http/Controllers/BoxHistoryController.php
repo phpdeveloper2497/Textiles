@@ -24,24 +24,6 @@ class BoxHistoryController extends Controller
     {
         $boxhistory = BoxHistory::with('box');
 
-        if ($request->filled('in_storage')) {
-            $boxhistory->where("in_storage", $request->get('in_storage'));
-        }
-        if ($request->filled('out_storage')) {
-            $boxhistory->where("out_storage", $request->get('out_storage'));
-        }
-        if ($request->filled('returned')) {
-            $boxhistory->where("returned", $request->get('returned'));
-        }
-        if ($request->filled('box_id')) {
-            $boxhistory->where("box_id", $request->get('box_id'));
-        }
-        if ($request->from || $request->to) {
-            $startDate = Carbon::parse($request->from)->startOfDay();
-            $endDate = Carbon::parse($request->to)->endOfDay();
-            $boxhistory->whereBetween('created_at', [$startDate, $endDate])->get();
-        }
-
         if ($request->sortBy && in_array($request->sortBy, ['id', 'created_at'])) {
             $sortBy = $request->sortBy;
         } else {
@@ -52,9 +34,7 @@ class BoxHistoryController extends Controller
         } else {
             $sortOrder = 'desc';
         }
-
         $history = $boxhistory->orderBy($sortBy, $sortOrder)->paginate(20);
-
         return $this->reply(BoxHistoryResource::collection($history));
     }
 
@@ -94,7 +74,7 @@ class BoxHistoryController extends Controller
                     return "Omborda ushbu materialdan siz so'rayotgan o'lcham yoki so'ralayotgan miqdorda mavjud emas.Ombor holatiga qarang";
                 }
             }
-            Recalculate::dispatch($boxhistory);
+//            Recalculate::dispatch($boxhistory);
             return $this->success('Box history done successfully', new StoreBoxHistoryResource($boxhistory));
         } else {
             return "Hozir hisobot kiritish vaqtidan tashqari vaqt, hisobot davri 7:00 dan 22:59 gacha ";

@@ -12,5 +12,7 @@ use JasonGuru\LaravelMakeRepository\Repository\BaseRepository;
  */
 interface BoxHistoryRepositoryInterface
 {
-    public function all(Request $request, BoxHistory $boxhistory);
+    public function all(Request $request, BoxHistory $boxHistory);
+
+    public function update(Request $request, BoxHistory $boxHistory);
 }

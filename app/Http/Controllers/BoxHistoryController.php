@@ -22,7 +22,25 @@ class BoxHistoryController extends Controller
 
     public function index(Request $request)
     {
-        $boxhistory = BoxHistory::with('box');
+        $boxHistory = BoxHistory::with('box');
+
+        if ($request->filled('in_storage')) {
+            $boxHistory->where("in_storage", $request->get('in_storage'));
+        }
+        if ($request->filled('out_storage')) {
+            $boxHistory->where("out_storage", $request->get('out_storage'));
+        }
+        if ($request->filled('returned')) {
+            $boxHistory->where("returned", $request->get('returned'));
+        }
+        if ($request->filled('box_id')) {
+            $boxHistory->where("box_id", $request->get('box_id'));
+        }
+        if ($request->from || $request->to) {
+            $startDate = Carbon::parse($request->from)->startOfDay();
+            $endDate = Carbon::parse($request->to)->endOfDay();
+            $boxHistory->whereBetween('created_at', [$startDate, $endDate])->get();
+        }
 
         if ($request->sortBy && in_array($request->sortBy, ['id', 'created_at'])) {
             $sortBy = $request->sortBy;
@@ -34,7 +52,7 @@ class BoxHistoryController extends Controller
         } else {
             $sortOrder = 'desc';
         }
-        $history = $boxhistory->orderBy($sortBy, $sortOrder)->paginate(20);
+        $history = $boxHistory->orderBy($sortBy, $sortOrder)->paginate(20);
         return $this->reply(BoxHistoryResource::collection($history));
     }
 
@@ -43,7 +61,7 @@ class BoxHistoryController extends Controller
      */
     public function store(StoreBoxHistoryRequest $request)
     {
-        $boxhistory = BoxHistory::create([
+        $boxHistory = BoxHistory::create([
             "box_id" => $request->box_id,
             "user_id" => $request->user()->id,
             "in_storage" => $request->in_storage,
@@ -62,20 +80,20 @@ class BoxHistoryController extends Controller
         if ($current_time >= $target_time_start_day && $current_time <= $target_time_end_day) {
             $box = Box::query()->where('id', '=', $request->box_id)->first();
             if ($request->in_storage === true) {
-                $box->increment('remainder', $boxhistory->length);
+                $box->increment('remainder', $boxHistory->length);
             }
             if ($request->returned === true) {
-                $box->increment('remainder', $boxhistory->length);
+                $box->increment('remainder', $boxHistory->length);
             }
             if ($request->out_storage === true) {
                 if ($box->remainder > 0 && $request->per_pc_meter == $box->per_pc_meter)  {
-                    $box->decrement('remainder', $boxhistory->length);
+                    $box->decrement('remainder', $boxHistory->length);
                 } else {
-                    return "Omborda ushbu materialdan siz so'rayotgan o'lcham yoki so'ralayotgan miqdorda mavjud emas.Ombor holatiga qarang";
+                    return "Omborda ushbu materialdan siz so'rayotgan o'lcham yoki so'ralayotgan miqdorda mavjud emas.";
                 }
             }
-//            Recalculate::dispatch($boxhistory);
-            return $this->success('Box history done successfully', new StoreBoxHistoryResource($boxhistory));
+//            Recalculate::dispatch($boxHistory);
+            return $this->success('Box history done successfully', new StoreBoxHistoryResource($boxHistory));
         } else {
             return "Hozir hisobot kiritish vaqtidan tashqari vaqt, hisobot davri 7:00 dan 22:59 gacha ";
         }
@@ -86,52 +104,18 @@ class BoxHistoryController extends Controller
      * Display the specified resource.
      */
 
-    /* public function show(Request $request, BoxHistory $boxHistory)
+    public function show(Request $request, BoxHistory $boxHistory)
      {
- //        if ($boxHistory->box_id === $request->id) {
- //            if ($request->filled('in_storage')) {
- //                $boxHistory->where("in_storage", $request->get('in_storage'));
- //            }
- //            if ($request->filled('out_storage')) {
- //                $boxHistory->where("out_storage", $request->get('out_storage'));
- //            }
- //            if ($request->filled('returned')) {
- //                $boxHistory->where("returned", $request->get('returned'));
- //            }
- //                dd($boxHistory);
- //        }
- //        if ($request->sortBy && in_array($request->sortBy, ['id', 'created_at'])) {
- //            $sortBy = $request->sortBy;
- //        } else {
- //            $sortBy = 'id';
- //        }
- //        if ($request->sortOrder && in_array($request->sortOrder, ['asc', 'desc'])) {
- //            $sortOrder = $request->sortOrder;
- //        } else {
- //            $sortOrder = 'desc';
- //        }
- //        $history = $boxHistory->orderBy($sortBy, $sortOrder)->paginate(20);
- //
- //        return $this->reply(BoxHistoryResource::collection($history));
-     }*/
+
+     }
 
     /**
      * Update the specified resource in storage.
      */
-//    public function update(UpdateBoxHistoryRequest $request, BoxHistory $boxHistory)
-//    {
-//        $boxHistory->update([
-//            "box_id" => $request->box_id,
-//            "user_id" => $request->user_id,
-//            "in_storage" => $request->in_storage,
-//            "out_storage" => $request->out_storage,
-//            "returned" => $request->returned,
-//            "per_pc_meter" => $request->per_pc_meter,
-//            "pc" => $request->pc,
-//            "commentary" => $request->commentary
-//        ]);
-//
-//    }
+    public function update(UpdateBoxHistoryRequest $request, BoxHistory $boxHistory)
+    {
+
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -143,32 +127,4 @@ class BoxHistoryController extends Controller
             return $this->success('Box History deleted successfully');
         }
     }
-    //    public function getBoxReport(Request $request)
-    //    {
-    //        $boxId = $request->box_id;
-    //
-    //        $results = BoxHistory::select('box_id', 'per_pc_meter','length',
-    //            \DB::raw('SUM(CASE WHEN in_storage = true THEN pc ELSE 0 END) as total_pc_in_storage'),
-    //            \DB::raw('SUM(CASE WHEN out_storage = true THEN pc ELSE 0 END) as total_pc_out_storage')
-    //        )
-    //            ->where('box_id', $boxId)
-    //            ->groupBy('box_id', 'per_pc_meter','length')
-    //            ->get();
-    //
-    //        $finalResults = $results->map(function($result) {
-    //            $remaining_pc = $result->total_pc_in_storage - $result->total_pc_out_storage;
-    //            $length = $remaining_pc * $result->per_pc_meter ;
-    //
-    //            return [
-    //                'box_id' => $result->box_id,
-    //                'per_pc_meter' => $result->per_pc_meter,
-    //                'remaining_pc' => $remaining_pc,
-    //                'length' => $length
-    //            ];
-    //        });
-    //
-    //        return response()->json($finalResults);
-    //    }
-
-
 }

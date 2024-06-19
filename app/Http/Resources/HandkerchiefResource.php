@@ -21,6 +21,7 @@ class HandkerchiefResource extends JsonResource
             'all_products' => $this->all_products,
             'defective_products' => $this->defective_products,
             'finished_products' => $this->finished_products,
+            "image_path" =>config('app.url')."/storage/". $this->image_path,
         ];
     }
 }

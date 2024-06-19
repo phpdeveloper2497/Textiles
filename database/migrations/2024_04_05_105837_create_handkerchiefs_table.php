@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('finished_products')->default(0);
             $table->integer('defective_products')->default(0);
             $table->integer('not_packaged')->nullable()->default(0);
+            $table->string('image_path')->nullable();
             $table->timestamps();
         });
     }

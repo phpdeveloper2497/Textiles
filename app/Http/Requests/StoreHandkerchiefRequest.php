@@ -29,6 +29,8 @@ class StoreHandkerchiefRequest extends FormRequest
             ],
             "name" => ["required","string","unique:handkerchiefs,name"],
             "sort_plane" => ["required","string","unique:handkerchiefs,sort_plane"],
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:1024'
+
         ];
     }
     public function messages()
@@ -37,7 +39,8 @@ class StoreHandkerchiefRequest extends FormRequest
             "name.unique" => "Bu nom allaqachon yaratilgan",
             "sort_plane.unique" => "Omborxonada bunday nomli joy allaqachon yaratilgan",
             'sort_plane.string' => 'Saralash boʻyicha beriladigan maydon qatori so\'z bo\'lishi kerak.',
-
+            "image.max" => "Rasm maydoni 1024 kilobaytdan oshmasligi kerak",
+            "image.mimes" => "Rasm jpeg,png,jpg,gif,svg formatlarida bo'lishi kerak"
         ];
     }
 }

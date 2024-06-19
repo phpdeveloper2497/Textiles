@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ShowBoxHistoryRequest;
 use App\Http\Resources\BoxHistoryResource;
 use App\Http\Resources\StoreBoxHistoryResource;
 use App\Jobs\Recalculate;
@@ -126,5 +125,24 @@ class BoxHistoryController extends Controller
             $boxHistory->delete();
             return $this->success('Box History deleted successfully');
         }
+    }
+
+    public function workshop()
+    {
+        $boxHistories = BoxHistory::all();
+        $boxHistoryReport = $boxHistories->where("out_storage",1)
+            ->where("created_at", Carbon::now()->startOfDay())->first()->length;
+
+        //TODO: $boxHistoryReport->length null bo'lganda degan xatolik tekshirish
+        if (!$boxHistories)
+        {
+            return response()->json(['error' => 'Box not found'], 404);
+        }
+        if (!$boxHistoryReport->length)
+        {
+            return response()->json(['error' => 'No box history found for today'], 404);
+        }
+        //TODO: $boxHistoryReport ni resoursce orqali qaytarish
+        return $boxHistoryReport;
     }
 }

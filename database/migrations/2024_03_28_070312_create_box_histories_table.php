@@ -20,7 +20,7 @@ return new class extends Migration
             $table->boolean('returned');
             $table->integer('per_pc_meter');
             $table->integer('pc');
-            $table->integer('length');
+            $table->integer('length')->nullable();
             $table->text('commentary')->nullable();
             $table->softDeletes();
             $table->timestamps();

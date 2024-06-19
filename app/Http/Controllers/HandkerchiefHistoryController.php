@@ -61,15 +61,21 @@ class HandkerchiefHistoryController extends Controller
 
     public function store(StoreHandkerchiefHistoryRequest $request)
     {
-        $handkerchiefHistoriy = HandkerchiefHistory::create([
-            'user_id' => $request->user_id,
-            'handkerchief_id' => $request->handkerchief_id,
-            'storage_in' => $request->storage_in,
-            'all_products' => $request->all_products,
-            'finished_products' => $request->finished_products,
-            'defective_products' => $request->defective_products
-        ]);
+$handkerchief = Handkerchief::find($request->handkerchief_id);
+//dd($handkerchief->box->boxHistories->where("in_storage","=", true));
+//if ($handkerchief->box->out_storage)
+        if($handkerchief->box->boxHistories->where("out_storage","=", true))
+        {
+            $handkerchiefHistoriy = HandkerchiefHistory::create([
+                'user_id' => $request->user_id,
+                'handkerchief_id' => $request->handkerchief_id,
+                'storage_in' => $request->storage_in,
+                'all_products' => $request->all_products,
+                'finished_products' => $request->finished_products,
+                'defective_products' => $request->defective_products
+            ]);
 
+        }
         $current_time = Carbon::now();
         $target_time_end_day = Carbon::today()->setHour(22)->setMinute(59)->setSecond(0);
         $target_time_start_day = Carbon::today()->setHour(7)->setMinute(0)->setSecond(0);
@@ -121,6 +127,9 @@ class HandkerchiefHistoryController extends Controller
     {
         $query = $handkerchiefHistoriy->newQuery();
 
+        if ($request->filled('handkerchief_id')) {
+            $query->where("handkerchief_id", $request->get('handkerchief_id'));
+        }
         if ($request->filled('storage_in')) {
             $query->where("storage_in", $request->get('storage_in'));
         }
@@ -177,13 +186,13 @@ class HandkerchiefHistoryController extends Controller
             "sold_products" => $request->sold_products,
             "sold_defective_products" => $request->sold_defective_products]);
 
-        if ($request->sold_out === true && $handkerchiefHistoriy->sold_products < $handkerchief->finished_products && $handkerchiefHistoriy->sold_defective_products < $handkerchief->defective_products) {
-            $handkerchief->finished_products -= $handkerchiefHistoriy->sold_products;
-            $handkerchief->defective_products -= $handkerchiefHistoriy->sold_defective_products;
-            $handkerchief->save();
-        } else {
-            return 'the product is not enough';
-        }
-        return $this->success('Product sold', $handkerchiefHistoriy);
+          if ($request->sold_out === true && $handkerchiefHistoriy->sold_products < $handkerchief->finished_products && $handkerchiefHistoriy->sold_defective_products < $handkerchief->defective_products) {
+              $handkerchief->finished_products -= $handkerchiefHistoriy->sold_products;
+              $handkerchief->defective_products -= $handkerchiefHistoriy->sold_defective_products;
+              $handkerchief->save();
+          } else {
+              return 'Mahsulot yetarli emas';
+          }
+        return $this->success('Sotilgan mahsulot', $handkerchiefHistoriy);
     }
 }

@@ -95,19 +95,19 @@ class BoxController extends Controller
      * Jarayonda qolgan material uzunligini ko'rish mwtrda
      */
 
-    public function workshop($id)
-    {
-        $box = Box::find($id);
-        $boxHistoryReport = $box->boxHistories->where("created_at", Carbon::now()->startOfDay())->first()->length;
-
-        if (!$box)
-        {
-            return response()->json(['error' => 'Box not found'], 404);
-        }
-        if (!$boxHistoryReport)
-        {
-            return response()->json(['error' => 'No box history found for today'], 404);
-        }
-        return $boxHistoryReport;
-    }
+//    public function workshop($id)
+//    {
+//        $box = Box::find($id);
+//        $boxHistoryReport = $box->boxHistories->where("created_at", Carbon::now()->startOfDay())->first()->length;
+//
+//        if (!$box)
+//        {
+//            return response()->json(['error' => 'Box not found'], 404);
+//        }
+//        if (!$boxHistoryReport)
+//        {
+//            return response()->json(['error' => 'No box history found for today'], 404);
+//        }
+//        return $boxHistoryReport;
+//    }
 }

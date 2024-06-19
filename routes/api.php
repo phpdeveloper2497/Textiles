@@ -33,8 +33,9 @@ Route::controller(AuthController::class)->group(function () {
 
 });
 
-Route::get('boxes/{id}/workshop',[BoxController::class,'workshop']);
-Route::post('handkerchief-history/{handkerchief}/sold',[HandkerchiefHistoryController::class,'sold']);
+//Route::get('boxes/{id}/workshop',[BoxController::class,'workshop']);
+Route::get('box-history/workshop',[BoxHistoryController::class,'workshop']);
+Route::post('handkerchief-history/sold',[HandkerchiefHistoryController::class,'sold']);
 
 Route::apiResources([
     'users' => UserController::class,

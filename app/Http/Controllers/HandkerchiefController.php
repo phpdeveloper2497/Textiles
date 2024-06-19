@@ -9,7 +9,10 @@ use App\Http\Resources\StoreHandkerchiefResource;
 use App\Models\Handkerchief;
 use App\Http\Requests\StoreHandkerchiefRequest;
 use App\Http\Requests\UpdateHandkerchiefRequest;
+use App\Models\HandkerchiefHistory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class HandkerchiefController extends Controller
 {
@@ -19,7 +22,7 @@ class HandkerchiefController extends Controller
         $this->middleware("auth:sanctum");
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $handkerchief = Handkerchief::all();
         return HandkerchiefResource::collection($handkerchief);
@@ -33,6 +36,11 @@ class HandkerchiefController extends Controller
             "name" => $request->name,
             "sort_plane" => $request->sort_plane,
         ]);
+        if ($request->file('image')) {
+            $path = $request->file('image')->store('handkerchiefs/' . $handkerchief->id, 'public');
+            $handkerchief->image_path=$path;
+            $handkerchief->save();
+        };
         return $this->reply($handkerchief);
     }
 
@@ -61,7 +69,9 @@ class HandkerchiefController extends Controller
      */
     public function destroy(Handkerchief $handkerchief)
     {
+        Storage::disk('public')->delete("$handkerchief->image_path");
+        File::DeleteDirectory('storage/' . 'boxes/' . "$handkerchief->id");
         $handkerchief->delete();
-        return "$handkerchief->id handkerchief deleted successfully";
+        return "handkerchief deleted successfully";
     }
 }

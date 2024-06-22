@@ -64,7 +64,7 @@ class Recalculate implements ShouldQueue
                     "per_pc_meter" => 0,
                     "pc" => 0,
                     "length" => $in_progress_material,
-                    "commentary" => 'Sexga material chiqarib yuborildi',
+                    "commentary" => 'Sexga ish tugaganda kelgan material qaytib sexga chiqarib yuborildi',
                     'created_at' => Carbon::tomorrow(),
                     'updated_at' => Carbon::tomorrow()
                 ]);

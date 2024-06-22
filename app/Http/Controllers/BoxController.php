@@ -43,8 +43,10 @@ class BoxController extends Controller
      */
     public function store(StoreBoxRequest $request)
     {
-        if (Gate::allows('create', Box::class)) {
+        if (!Gate::allows('create', Box::class)) {
             return response()->json(["Sizda bu yerga kirish uchun ruxsat yo'q"], 403);
+        }
+        else {
             $this->boxRepository->create($request);
             return $this->success('Box created successfully');
         }

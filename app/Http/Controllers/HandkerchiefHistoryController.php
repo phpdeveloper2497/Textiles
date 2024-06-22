@@ -11,6 +11,7 @@ use App\Http\Requests\UpdateHandkerchiefHistoryRequest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Gate;
 
 class HandkerchiefHistoryController extends Controller
 {
@@ -19,30 +20,31 @@ class HandkerchiefHistoryController extends Controller
      */
     public function index(Request $request)
     {
-        $handkerchiefHistoriy = HandkerchiefHistory::with('handkerchief');
+        Gate::authorize('viewAny', HandkerchiefHistory::class);
+        $handkerchiefHistory = HandkerchiefHistory::with('handkerchief');
 
         if ($request->filled('storage_in')) {
-            $handkerchiefHistoriy->where("storage_in", $request->get('storage_in'));
+            $handkerchiefHistory->where("storage_in", $request->get('storage_in'));
         }
         if ($request->filled('sold_out')) {
-            $handkerchiefHistoriy->where('sold_out', $request->get('sold_out'));
+            $handkerchiefHistory->where('sold_out', $request->get('sold_out'));
         }
 
         if ($request->user_id) {
-            $handkerchiefHistoriy->where('user_id', $request->user_id);
+            $handkerchiefHistory->where('user_id', $request->user_id);
         }
 
         if ($request->handkerchief_id) {
-            $handkerchiefHistoriy->where('handkerchief_id', $request->handkerchief_id);
+            $handkerchiefHistory->where('handkerchief_id', $request->handkerchief_id);
         }
 
         if ($request->from || $request->to) {
             $startDate = Carbon::parse($request->from)->startOfDay();
             $endDate = Carbon::parse($request->to)->endOfDay();
-            $handkerchiefHistoriy->whereBetween('created_at', [$startDate, $endDate])->get();
+            $handkerchiefHistory->whereBetween('created_at', [$startDate, $endDate])->get();
         }
 
-        if($request->sortBy && in_array($request->sortBy, ['id', 'created_at'])) {
+        if ($request->sortBy && in_array($request->sortBy, ['id', 'created_at'])) {
             $sortBy = $request->sortBy;
         } else {
             $sortBy = 'id';
@@ -53,7 +55,7 @@ class HandkerchiefHistoryController extends Controller
             $sortOrder = 'desc';
         }
 
-        $history = $handkerchiefHistoriy->orderBy($sortBy, $sortOrder)->paginate(15);
+        $history = $handkerchiefHistory->orderBy($sortBy, $sortOrder)->paginate(15);
 
         return HandkerchiefHistoryResource::collection($history);
     }
@@ -61,12 +63,12 @@ class HandkerchiefHistoryController extends Controller
 
     public function store(StoreHandkerchiefHistoryRequest $request)
     {
-$handkerchief = Handkerchief::find($request->handkerchief_id);
+        Gate::authorize('create', HandkerchiefHistory::class);
+        $handkerchief = Handkerchief::find($request->handkerchief_id);
 //dd($handkerchief->box->boxHistories->where("in_storage","=", true));
 //if ($handkerchief->box->out_storage)
-        if($handkerchief->box->boxHistories->where("out_storage","=", true))
-        {
-            $handkerchiefHistoriy = HandkerchiefHistory::create([
+        if ($handkerchief->box->boxHistories->where("out_storage", "=", true)) {
+            $handkerchiefHistory = HandkerchiefHistory::create([
                 'user_id' => $request->user_id,
                 'handkerchief_id' => $request->handkerchief_id,
                 'storage_in' => $request->storage_in,
@@ -83,13 +85,13 @@ $handkerchief = Handkerchief::find($request->handkerchief_id);
         if ($current_time >= $target_time_start_day && $current_time <= $target_time_end_day) {
             if ($request->storage_in === true) {
                 $handkerchief = Handkerchief::find($request->handkerchief_id);
-                $handkerchief->all_products += $handkerchiefHistoriy->all_products;
-                $handkerchief->finished_products += $handkerchiefHistoriy->finished_products;
-                $handkerchief->defective_products += $handkerchiefHistoriy->defective_products;
+                $handkerchief->all_products += $handkerchiefHistory->all_products;
+                $handkerchief->finished_products += $handkerchiefHistory->finished_products;
+                $handkerchief->defective_products += $handkerchiefHistory->defective_products;
                 $handkerchief->not_packaged += $handkerchief->all_products - $handkerchief->finished_products - $handkerchief->defective_products;
                 $handkerchief->save();
             }
-            return new HandkerchiefHistoryResource($handkerchiefHistoriy);
+            return new HandkerchiefHistoryResource($handkerchiefHistory);
         } else {
             return "Hozir hisobot kiritish vaqtidan tashqari vaqt, hisobot davri 7:00 dan 22:59 gacha ";
         }
@@ -98,16 +100,16 @@ $handkerchief = Handkerchief::find($request->handkerchief_id);
     /**
      * Display the specified resource.
      */
-//    public function show(Request $request, HandkerchiefHistory $handkerchiefHistoriy) :LengthAwarePaginator
+//    public function show(Request $request, HandkerchiefHistory $handkerchiefHistory) :LengthAwarePaginator
 //    {
 //        if ($request->filled('storage_in')) {
-//            $handkerchiefHistoriy->where("storage_in", $request->get('storage_in'));
+//            $handkerchiefHistory->where("storage_in", $request->get('storage_in'));
 //        }
 //        if ($request->filled('sold_out')) {
-//            $handkerchiefHistoriy->where('sold_out', $request->get('sold_out'));
+//            $handkerchiefHistory->where('sold_out', $request->get('sold_out'));
 //        }
 //        if ($request->user_id) {
-//            $handkerchiefHistoriy->where('user_id', $request->user_id);
+//            $handkerchiefHistory->where('user_id', $request->user_id);
 //        }
 //        if($request->sortBy && in_array($request->sortBy, ['id', 'created_at'])) {
 //            $sortBy = $request->sortBy;
@@ -119,13 +121,14 @@ $handkerchief = Handkerchief::find($request->handkerchief_id);
 //        } else {
 //            $sortOrder = 'desc';
 //        }
-//        $history = $handkerchiefHistoriy->orderBy($sortBy,$sortOrder)->paginate(15);
+//        $history = $handkerchiefHistory->orderBy($sortBy,$sortOrder)->paginate(15);
 //        return new HandkerchiefHistoryResource($history);
 //    }
 
-    public function show(Request $request, HandkerchiefHistory $handkerchiefHistoriy) : LengthAwarePaginator
+    public function show(Request $request, HandkerchiefHistory $handkerchiefHistory): LengthAwarePaginator
     {
-        $query = $handkerchiefHistoriy->newQuery();
+        Gate::authorize('view', $handkerchiefHistory);
+        $query = $handkerchiefHistory->newQuery();
 
         if ($request->filled('handkerchief_id')) {
             $query->where("handkerchief_id", $request->get('handkerchief_id'));
@@ -159,23 +162,25 @@ $handkerchief = Handkerchief::find($request->handkerchief_id);
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateHandkerchiefHistoryRequest $request, HandkerchiefHistory $handkerchiefHistoriy)
+    public function update(UpdateHandkerchiefHistoryRequest $request, HandkerchiefHistory $handkerchiefHistory)
     {
-        //
+        Gate::authorize('update', HandkerchiefHistory::class);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(HandkerchiefHistory $handkerchiefHistoriy)
+    public function destroy(HandkerchiefHistory $handkerchiefHistory)
     {
-        $handkerchiefHistoriy->delete();
-        return "$handkerchiefHistoriy->id HandkerchiefHistoriy deleted";
+        Gate::authorize('delete', HandkerchiefHistory::class);
+        $handkerchiefHistory->delete();
+        return "$handkerchiefHistory->id handkerchiefHistory deleted";
     }
 
     public function sold(SoldHandkerchiefRequest $request, Handkerchief $handkerchief)
     {
-        $handkerchiefHistoriy = HandkerchiefHistory::create([
+        Gate::authorize('sold', HandkerchiefHistory::class);
+        $handkerchiefHistory = HandkerchiefHistory::create([
             'user_id' => $request->user_id,
             'handkerchief_id' => $request->handkerchief_id,
             'storage_in' => 0,
@@ -186,13 +191,13 @@ $handkerchief = Handkerchief::find($request->handkerchief_id);
             "sold_products" => $request->sold_products,
             "sold_defective_products" => $request->sold_defective_products]);
 
-          if ($request->sold_out === true && $handkerchiefHistoriy->sold_products < $handkerchief->finished_products && $handkerchiefHistoriy->sold_defective_products < $handkerchief->defective_products) {
-              $handkerchief->finished_products -= $handkerchiefHistoriy->sold_products;
-              $handkerchief->defective_products -= $handkerchiefHistoriy->sold_defective_products;
-              $handkerchief->save();
-          } else {
-              return 'Mahsulot yetarli emas';
-          }
-        return $this->success('Sotilgan mahsulot', $handkerchiefHistoriy);
+        if ($request->sold_out === true && $handkerchiefHistory->sold_products < $handkerchief->finished_products && $handkerchiefHistory->sold_defective_products < $handkerchief->defective_products) {
+            $handkerchief->finished_products -= $handkerchiefHistory->sold_products;
+            $handkerchief->defective_products -= $handkerchiefHistory->sold_defective_products;
+            $handkerchief->save();
+        } else {
+            return 'Mahsulot yetarli emas';
+        }
+        return $this->success('Sotilgan mahsulot', $handkerchiefHistory);
     }
 }

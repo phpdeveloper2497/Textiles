@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //});
 
-Route::post('login',[AuthController::class,'login']);
+Route::post('login', [AuthController::class, 'login']);
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
     Route::post('register', 'register');
@@ -34,9 +34,24 @@ Route::controller(AuthController::class)->group(function () {
 });
 
 //Route::get('boxes/{id}/workshop',[BoxController::class,'workshop']);
-Route::get('box-history/workshop',[BoxHistoryController::class,'workshop']);
-Route::post('handkerchief-history/sold',[HandkerchiefHistoryController::class,'sold']);
+Route::get('box-history/workshop', [BoxHistoryController::class, 'workshop']);
+Route::post('handkerchiefs/{handkerchief}/view-history', [HandkerchiefController::class, 'viewHandkerchiefHistory']);
+Route::post('handkerchief-history/sold', [HandkerchiefHistoryController::class, 'sold']);
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::controller(UserController::class)->prefix('users')->group(function () {
+        Route::get('/', 'index');
+        Route::get('/roles', 'viewAnyRoles');
+        Route::get('/{user}', 'show');
+        Route::get('/{user}/update', 'update');
+        Route::post('/create', 'store');
+        Route::get('/{user}/delete', 'delete');
+        Route::post('/{user}/assign-role', 'assignRole');
+        Route::delete('/{user}/remove-role', 'removeRole');
+    });
+});
+
+Route::middleware('auth:sanctum')->group(function () {
 Route::apiResources([
     'users' => UserController::class,
     'boxes' => BoxController::class,
@@ -44,4 +59,4 @@ Route::apiResources([
     'handkerchiefs' => HandkerchiefController::class,
     'handkerchief-history' => HandkerchiefHistoryController::class
 ]);
-
+});

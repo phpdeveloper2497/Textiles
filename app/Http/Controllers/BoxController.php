@@ -11,14 +11,18 @@ use App\Models\Box;
 use App\Http\Requests\StoreBoxRequest;
 use App\Http\Requests\UpdateBoxRequest;
 use App\Models\BoxHistory;
+use App\Models\User;
 use App\Repositories\Contracts\BoxRepositoryInterface;
 use Carbon\Carbon;
 use http\Env\Request;
+use http\Env\Response;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 class BoxController extends Controller
 {
+
     public function __construct(private readonly BoxRepositoryInterface $boxRepository)
     {
         $this->middleware("auth:sanctum");
@@ -26,8 +30,12 @@ class BoxController extends Controller
 
     public function index()
     {
-        $box = Box::all();
-        return $this->reply(BoxResource::collection($box));
+        if (!Gate::allows('viewAny', Box::class)) {
+            return response()->json(["Sizda bu yerga kirish uchun ruxsat yo'q"], 403);
+        } else {
+            $box = Box::all();
+            return $this->reply(BoxResource::collection($box));
+        }
     }
 
     /**
@@ -35,26 +43,32 @@ class BoxController extends Controller
      */
     public function store(StoreBoxRequest $request)
     {
-        $this->boxRepository->create($request);
-        return $this->success('Box created successfully');
+        if (Gate::allows('create', Box::class)) {
+            return response()->json(["Sizda bu yerga kirish uchun ruxsat yo'q"], 403);
+            $this->boxRepository->create($request);
+            return $this->success('Box created successfully');
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(ShowBoxRequest $request,Box $box)
+    public function show(ShowBoxRequest $request, Box $box)
     {
-        if ($request->in_storage == 1) {
-            return StoreBoxHistoryResource::collection($box->boxHistories()->where('in_storage', '=', true)->get());
-        }
-        if ($request->out_storage == 1) {
-            return StoreBoxHistoryResource::collection($box->boxHistories()->where('out_storage', '=', true)->get());
-        }
-        if ($request->returned == 1) {
-            return StoreBoxHistoryResource::collection($box->boxHistories()->where('returned', '=', true)->get());
-        }
+        if (!Gate::authorize('view', $box)) {
+            return response()->json(["Sizda bu yerga kirish uchun ruxsat yo'q"], 403);
+        } else {
+            if ($request->in_storage == true) {
+                return StoreBoxHistoryResource::collection($box->boxHistories()->where('in_storage', '=', true)->get());
+            }
+            if ($request->out_storage == true) {
+                return StoreBoxHistoryResource::collection($box->boxHistories()->where('out_storage', '=', true)->get());
+            }
+            if ($request->returned == 1) {
+                return StoreBoxHistoryResource::collection($box->boxHistories()->where('returned', '=', true)->get());
+            }
 
-        // Box da per_pc_meter uzunlikdagi matodan qancha qolganligini ko'rsatish
+            // Box da per_pc_meter uzunlikdagi matodan qancha qolganligini ko'rsatish
 
             $results = BoxHistory::select('box_id', 'per_pc_meter',
                 \DB::raw('SUM(CASE WHEN in_storage = true THEN pc ELSE 0 END) as total_pc_in_storage'),
@@ -67,6 +81,7 @@ class BoxController extends Controller
 
             $finalResults = $results->map(function ($result) {
                 $remaining_pc = $result->total_pc_in_storage + $result->total_pc_returned - $result->total_pc_out_storage;
+//            dd($remaining_pc);
 
                 return [
                     'size_material' => $result->per_pc_meter,
@@ -75,6 +90,7 @@ class BoxController extends Controller
                 ];
             });
             return response()->json($finalResults);
+        }
     }
 
     /**
@@ -82,11 +98,25 @@ class BoxController extends Controller
      */
     public function update(StoreBoxRequest $request, Box $box)
     {
+//        if (!Gate::authorize('update', Box::class)) {
+//            return response()->json(["Sizda bu yerga kirish uchun ruxsat yo'q"], 403);
+//        } else {
+//
+//            $box->name = $request->get('name');
+//            $box->per_liner_meter = $request->get('per_liner_meter');
+//            $box->sort_by = $request->get('sort_by');
+//
+//            if ($request->file('image')) {
+//                $box->image_path = $request->image;
+//                $box->save();
+//            };
 //        return $this->success("$box->id box updated", $box);
+//        }
     }
 
     public function destroy(Box $box)
     {
+        Gate::authorize('delete', $box);
         $this->boxRepository->delete($box);
         return $this->success("Box $box->id deleted");
     }

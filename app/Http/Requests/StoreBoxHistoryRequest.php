@@ -27,7 +27,7 @@ class StoreBoxHistoryRequest extends FormRequest
                 'exists:boxes,id',
                 'required'
             ],
-            "user_id" =>['required','exists:users,id','numeric'],
+            "user_id" =>['nullable','exists:users,id','numeric'],
             "in_storage" => ['required','boolean'],
             "out_storage" => ['required','boolean'],
             "returned" => ['required','boolean'],

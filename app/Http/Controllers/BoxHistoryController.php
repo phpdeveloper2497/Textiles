@@ -11,6 +11,7 @@ use App\Http\Requests\StoreBoxHistoryRequest;
 use App\Http\Requests\UpdateBoxHistoryRequest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class BoxHistoryController extends Controller
 {
@@ -21,6 +22,7 @@ class BoxHistoryController extends Controller
 
     public function index(Request $request)
     {
+        Gate::authorize('viewAny', BoxHistory::class);
         $boxHistory = BoxHistory::with('box');
 
         if ($request->filled('in_storage')) {
@@ -60,6 +62,7 @@ class BoxHistoryController extends Controller
      */
     public function store(StoreBoxHistoryRequest $request)
     {
+        Gate::authorize('create', BoxHistory::class);
         $boxHistory = BoxHistory::create([
             "box_id" => $request->box_id,
             "user_id" => $request->user()->id,
@@ -84,9 +87,17 @@ class BoxHistoryController extends Controller
             if ($request->returned === true) {
                 $box->increment('remainder', $boxHistory->length);
             }
-            if ($request->out_storage === true) {
-                if ($box->remainder > 0 && $request->per_pc_meter == $box->per_pc_meter)  {
-                    $box->decrement('remainder', $boxHistory->length);
+            if ($request->out_storage === true && $request->pc<=$boxHistory->pc) {
+                if ($box->remainder > 0){
+                    $results = BoxHistory::select('box_id', 'per_pc_meter',)
+                        ->where('box_id', $box->id)
+                        ->groupBy('box_id', 'per_pc_meter')
+                        ->get();
+                    foreach ($results as $result){
+                        if($request->per_pc_meter === $result->per_pc_meter ){
+                            $box->decrement('remainder', $boxHistory->length);
+                        }
+                    }
                 } else {
                     return "Omborda ushbu materialdan siz so'rayotgan o'lcham yoki so'ralayotgan miqdorda mavjud emas.";
                 }
@@ -104,16 +115,17 @@ class BoxHistoryController extends Controller
      */
 
     public function show(Request $request, BoxHistory $boxHistory)
-     {
+    {
+        Gate::authorize('view', BoxHistory::class);
 
-     }
+    }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(UpdateBoxHistoryRequest $request, BoxHistory $boxHistory)
     {
-
+        Gate::authorize('update', BoxHistory::class);
     }
 
     /**
@@ -121,28 +133,33 @@ class BoxHistoryController extends Controller
      */
     public function destroy(BoxHistory $boxHistory)
     {
+        Gate::authorize('delete', $boxHistory);
         if (auth()->user()) {
             $boxHistory->delete();
             return $this->success('Box History deleted successfully');
         }
     }
 
-    public function workshop()
+    public function workshop(BoxHistory $boxHistory)
     {
-        $boxHistories = BoxHistory::all();
-        $boxHistoryReport = $boxHistories->where("out_storage",1)
-            ->where("created_at", Carbon::now()->startOfDay())->first()->length;
-
-        //TODO: $boxHistoryReport->length null bo'lganda degan xatolik tekshirish
-        if (!$boxHistories)
-        {
-            return response()->json(['error' => 'Box not found'], 404);
+        if (!Gate::authorize('workshop',  $boxHistory)) {
+                return $this->reply('Sizda bu yerga kirish uchun ruxsat yo\'q');
+        } else {
+            $boxHistories = BoxHistory::all();
+//            dd($boxHistories);
+            $start_day = Carbon::now()->startOfDay();
+            $end_day = Carbon::today()->setHour(01)->setMinute(59)->setSecond(0);
+            $boxHistoryReport = $boxHistories->where("out_storage", "=",true)
+                ->whereBetween('created_at', [$start_day, $end_day])->first()->length;
+            //TODO: $boxHistoryReport->length null bo'lganda degan xatolik tekshirish
+    //            if (!$boxHistories) {
+    //                return response()->json(['error' => 'Box not found'], 404);
+    //            }
+                if ($boxHistoryReport == null) {
+                    return response()->json(['error' => 'No box history found for today'], 404);
+                }
+            //TODO: $boxHistoryReport ni resoursce orqali qaytarish
+            return $boxHistoryReport;
         }
-        if (!$boxHistoryReport->length)
-        {
-            return response()->json(['error' => 'No box history found for today'], 404);
-        }
-        //TODO: $boxHistoryReport ni resoursce orqali qaytarish
-        return $boxHistoryReport;
     }
 }

@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class HandkerchiefHistoryResource extends JsonResource
+class HandkerchiefByIDResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,17 +16,10 @@ class HandkerchiefHistoryResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'storage_in' => $this->storage_in,
-            'sold_out' => $this->sold_out,
-            'handkerchief_id' => $this->handkerchief_id,
-            'user_id' => $this->user_id,
             'all_products' => $this->all_products,
             'defective_products' => $this->defective_products,
             'finished_products' => $this->finished_products,
-            'sold_products' => $this->sold_products,
-            'sold_defective_products' => $this->sold_defective_products,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'not_packaged' => $this->not_packaged,
         ];
     }
 }

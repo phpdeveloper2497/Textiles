@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\BoxHistoryResource;
+use App\Http\Resources\InprogressBoxHistoryResource;
 use App\Http\Resources\StoreBoxHistoryResource;
 use App\Jobs\Recalculate;
 use App\Models\Box;
@@ -12,6 +13,7 @@ use App\Http\Requests\UpdateBoxHistoryRequest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use function Laravel\Prompts\error;
 
 class BoxHistoryController extends Controller
 {
@@ -146,20 +148,15 @@ class BoxHistoryController extends Controller
                 return $this->reply('Sizda bu yerga kirish uchun ruxsat yo\'q');
         } else {
             $boxHistories = BoxHistory::all();
-//            dd($boxHistories);
             $start_day = Carbon::now()->startOfDay();
             $end_day = Carbon::today()->setHour(01)->setMinute(59)->setSecond(0);
             $boxHistoryReport = $boxHistories->where("out_storage", "=",true)
-                ->whereBetween('created_at', [$start_day, $end_day])->first()->length;
-            //TODO: $boxHistoryReport->length null bo'lganda degan xatolik tekshirish
-    //            if (!$boxHistories) {
-    //                return response()->json(['error' => 'Box not found'], 404);
-    //            }
-                if ($boxHistoryReport == null) {
-                    return response()->json(['error' => 'No box history found for today'], 404);
+                ->whereBetween('created_at', [$start_day, $end_day]);
+                if ($boxHistoryReport->isEmpty()) {
+                    return $this->error('Sexda ish jarayonida material yo\'q');
+                }else{
+            return new InprogressBoxHistoryResource($boxHistoryReport->first());
                 }
-            //TODO: $boxHistoryReport ni resoursce orqali qaytarish
-            return $boxHistoryReport;
         }
     }
 }

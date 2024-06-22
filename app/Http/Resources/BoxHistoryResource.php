@@ -17,7 +17,7 @@ class BoxHistoryResource extends JsonResource
         return [
             "id" => $this->id,
             "box_id" => $this->box_id,
-            "user_id" => $this->user_id,
+            'user' => $this->user->nickname,
             "in_storage" => $this->in_storage,
             "out_storage" => $this->out_storage,
             "returned" => $this->returned,

@@ -19,7 +19,7 @@ class HandkerchiefHistoryResource extends JsonResource
             'storage_in' => $this->storage_in,
             'sold_out' => $this->sold_out,
             'handkerchief_id' => $this->handkerchief_id,
-            'user_id' => $this->user_id,
+            'user' => $this->user->nickname,
             'all_products' => $this->all_products,
             'defective_products' => $this->defective_products,
             'finished_products' => $this->finished_products,

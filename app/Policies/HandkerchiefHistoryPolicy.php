@@ -64,7 +64,7 @@ class HandkerchiefHistoryPolicy
         return $user->hasRole('admin');
     }
 
-    public function sold(User $user, HandkerchiefHistory $handkerchiefHistory): bool
+    public function sold(User $user): bool
     {
         return $user->hasRole('admin');
     }

@@ -15,6 +15,11 @@ use Illuminate\Support\Facades\Gate;
 
 class HandkerchiefHistoryController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      */
@@ -69,7 +74,7 @@ class HandkerchiefHistoryController extends Controller
 //if ($handkerchief->box->out_storage)
         if ($handkerchief->box->boxHistories->where("out_storage", "=", true)) {
             $handkerchiefHistory = HandkerchiefHistory::create([
-                'user_id' => $request->user_id,
+                'user_id' => $request->user()->id,
                 'handkerchief_id' => $request->handkerchief_id,
                 'storage_in' => $request->storage_in,
                 'all_products' => $request->all_products,
@@ -172,24 +177,34 @@ class HandkerchiefHistoryController extends Controller
      */
     public function destroy(HandkerchiefHistory $handkerchiefHistory)
     {
-        Gate::authorize('delete', HandkerchiefHistory::class);
-        $handkerchiefHistory->delete();
-        return "$handkerchiefHistory->id handkerchiefHistory deleted";
+        if (!Gate::authorize('delete', $handkerchiefHistory)) {
+            return response("Sizda bu yerga kirish uchun ruxsat yo'q");
+        } else {
+            $handkerchiefHistory->delete();
+            return "Id raqami $handkerchiefHistory->id ga teng bo'lgan tarix o'chirib yuborildi";
+        }
     }
 
-    public function sold(SoldHandkerchiefRequest $request, Handkerchief $handkerchief)
+    public function sold(SoldHandkerchiefRequest $request,HandkerchiefHistory $handkerchiefHistory)
     {
-        Gate::authorize('sold', HandkerchiefHistory::class);
-        $handkerchiefHistory = HandkerchiefHistory::create([
-            'user_id' => $request->user_id,
-            'handkerchief_id' => $request->handkerchief_id,
-            'storage_in' => 0,
-            'all_products' => 0,
-            'finished_products' => 0,
-            'defective_products' => 0,
-            "sold_out" => $request->sold_out,
-            "sold_products" => $request->sold_products,
-            "sold_defective_products" => $request->sold_defective_products]);
+        $handkerchief =Handkerchief::findOrFail($request->handkerchief_id);
+        if (!Gate::allows('sold', HandkerchiefHistory::class)) {
+            return response()->json(["Sizda bu yerga kirish uchun ruxsat yo'q"], 403);
+        } else {
+            if ($request->sold_out === true && $request->sold_products < $handkerchief->finished_products && $request->sold_defective_products < $handkerchief->defective_products) {
+                $handkerchiefHistory = HandkerchiefHistory::create([
+                    'user_id' => $request->user()->id,
+                    'handkerchief_id' => $request->handkerchief_id,
+                    'storage_in' => 0,
+                    'all_products' => 0,
+                    'finished_products' => 0,
+                    'defective_products' => 0,
+                    "sold_out" => $request->sold_out,
+                    "sold_products" => $request->sold_products,
+                    "sold_defective_products" => $request->sold_defective_products]);
+            }else{
+                return $this->error('Omborda ushbu mahsulotdan siz so\'rayotgan miqdorda mavjud emas');
+            }
 
         if ($request->sold_out === true && $handkerchiefHistory->sold_products < $handkerchief->finished_products && $handkerchiefHistory->sold_defective_products < $handkerchief->defective_products) {
             $handkerchief->finished_products -= $handkerchiefHistory->sold_products;
@@ -199,5 +214,6 @@ class HandkerchiefHistoryController extends Controller
             return 'Mahsulot yetarli emas';
         }
         return $this->success('Sotilgan mahsulot', $handkerchiefHistory);
+    }
     }
 }

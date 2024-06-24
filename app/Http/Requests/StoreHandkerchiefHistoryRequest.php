@@ -24,7 +24,7 @@ class StoreHandkerchiefHistoryRequest extends FormRequest
 
         return [
             'user_id' => [
-                "required",
+                "nullable",
                 "exists:users,id",
                 "numeric"
             ],

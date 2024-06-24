@@ -34,9 +34,9 @@ Route::controller(AuthController::class)->group(function () {
 });
 
 //Route::get('boxes/{id}/workshop',[BoxController::class,'workshop']);
-Route::get('box-history/workshop', [BoxHistoryController::class, 'workshop']);
+Route::get('box-histories/workshop', [BoxHistoryController::class, 'workshop']);
 Route::post('handkerchiefs/{handkerchief}/view-history', [HandkerchiefController::class, 'viewHandkerchiefHistory']);
-Route::post('handkerchief-history/sold', [HandkerchiefHistoryController::class, 'sold']);
+Route::post('handkerchief-histories/sold', [HandkerchiefHistoryController::class, 'sold'])->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::controller(UserController::class)->prefix('users')->group(function () {
@@ -55,8 +55,8 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::apiResources([
     'users' => UserController::class,
     'boxes' => BoxController::class,
-    'box-history' => BoxHistoryController::class,
+    'box-histories' => BoxHistoryController::class,
     'handkerchiefs' => HandkerchiefController::class,
-    'handkerchief-history' => HandkerchiefHistoryController::class
+    'handkerchief-histories' => HandkerchiefHistoryController::class
 ]);
 });

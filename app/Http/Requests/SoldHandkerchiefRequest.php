@@ -12,6 +12,7 @@ class SoldHandkerchiefRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+
     }
 
     /**
@@ -22,9 +23,19 @@ class SoldHandkerchiefRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "sold_out" => ['required','boolean'],
-            "sold_products" => "nullable|numeric",
-            "sold_defective_products" =>"nullable|numeric"
+            'user_id' => [
+                "nullable",
+                "exists:users,id",
+                "numeric"
+            ],
+            'handkerchief_id' => [
+                "required",
+                "exists:handkerchiefs,id",
+                "numeric"
+            ],
+            "sold_out" => "required|boolean",
+            "sold_products" => "required|numeric",
+            "sold_defective_products" =>"required|numeric"
         ];
     }
 }

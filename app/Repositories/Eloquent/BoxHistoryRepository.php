@@ -14,6 +14,8 @@ class BoxHistoryRepository implements BoxHistoryRepositoryInterface
 {
         public function all(Request $request, BoxHistory $boxHistory)
         {
+//            dd($request);
+//            dd($boxHistory);
             if ($request->filled('in_storage')) {
                 $boxHistory->where("in_storage", $request->get('in_storage'));
             }

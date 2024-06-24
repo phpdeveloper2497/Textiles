@@ -16,13 +16,13 @@ class HandkerchiefHistoryResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'user' => $this->user->nickname,
             'storage_in' => $this->storage_in,
             'sold_out' => $this->sold_out,
             'handkerchief_id' => $this->handkerchief_id,
-            'user' => $this->user->nickname,
             'all_products' => $this->all_products,
-            'defective_products' => $this->defective_products,
             'finished_products' => $this->finished_products,
+            'defective_products' => $this->defective_products,
             'sold_products' => $this->sold_products,
             'sold_defective_products' => $this->sold_defective_products,
             'created_at' => $this->created_at,

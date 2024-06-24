@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ShowHandkerchiefRequest;
+use App\Http\Requests\SoldHandkerchiefRequest;
 use App\Http\Resources\HandkerchiefByIDResource;
 use App\Http\Resources\HandkerchiefHistoryResource;
 use App\Http\Resources\HandkerchiefResource;
@@ -107,4 +108,33 @@ class HandkerchiefController extends Controller
         $handkerchief->delete();
         return "handkerchief deleted successfully";
     }
+
+    public function sold(SoldHandkerchiefRequest $request, Handkerchief $handkerchief)
+    {
+        dd($request->user()->id);
+//        $handkerchief =Handkerchief::findOrFail($request->id);
+//        if (!Gate::allows('sold', HandkerchiefHistory::class)) {
+//            return response()->json(["Sizda bu yerga kirish uchun ruxsat yo'q"], 403);
+//        } else {
+        $handkerchiefHistory = HandkerchiefHistory::create([
+            'user_id' => $request->user()->id,
+            'handkerchief_id' => $request->handkerchief_id,
+            'storage_in' => 0,
+            'all_products' => 0,
+            'finished_products' => 0,
+            'defective_products' => 0,
+            "sold_out" => $request->sold_out,
+            "sold_products" => $request->sold_products,
+            "sold_defective_products" => $request->sold_defective_products]);
+
+        if ($request->sold_out === true && $handkerchiefHistory->sold_products < $handkerchief->finished_products && $handkerchiefHistory->sold_defective_products < $handkerchief->defective_products) {
+            $handkerchief->finished_products -= $handkerchiefHistory->sold_products;
+            $handkerchief->defective_products -= $handkerchiefHistory->sold_defective_products;
+            $handkerchief->save();
+        } else {
+            return 'Mahsulot yetarli emas';
+        }
+        return $this->success('Sotilgan mahsulot', $handkerchiefHistory);
+    }
+
 }

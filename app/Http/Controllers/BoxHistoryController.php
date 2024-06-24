@@ -73,11 +73,55 @@ class BoxHistoryController extends Controller
 //            ->groupBy('box_id', 'per_pc_meter')
 //            ->get();
 //        foreach ($results as $result)
-//            dd($result->total_pc_returned );
+////            dd($result->total_pc_returned );
 //            if ($request->out_storage === true) {
 //                if ($request->per_pc_meter === $result->per_pc_meter) {
 //                    if ($result->total_pc_in_storage + $result->total_pc_returned >= $request->pc) {
-//                        return 'success';
+////                               Gate::authorize('create', BoxHistory::class);
+//        $boxHistory = BoxHistory::create([
+//            "box_id" => $request->box_id,
+//            "user_id" => $request->user()->id,
+//            "in_storage" => $request->in_storage,
+//            "out_storage" => $request->out_storage,
+//            "returned" => $request->returned,
+//            "per_pc_meter" => $request->per_pc_meter,
+//            "pc" => $request->pc,
+//            "length" => $request->per_pc_meter * $request->pc,
+//            "commentary" => $request->commentary
+//        ]);
+//
+//        $current_time = Carbon::now();
+//        $target_time_end_day = Carbon::today()->setHour(22)->setMinute(59)->setSecond(0);
+//        $target_time_start_day = Carbon::today()->setHour(7)->setMinute(00)->setSecond(0);
+//
+//        if ($current_time >= $target_time_start_day && $current_time <= $target_time_end_day) {
+//            $box = Box::query()->where('id', '=', $request->box_id)->first();
+//            if ($request->in_storage === true) {
+//                $box->increment('remainder', $boxHistory->length);
+//            }
+//            if ($request->returned === true) {
+//                $box->increment('remainder', $boxHistory->length);
+//            }
+//            if ($request->out_storage === true && $request->pc<=$boxHistory->pc) {
+//                if ($box->remainder > 0){
+//                    $results = BoxHistory::select('box_id', 'per_pc_meter',)
+//                        ->where('box_id', $box->id)
+//                        ->groupBy('box_id', 'per_pc_meter')
+//                        ->get();
+//                    foreach ($results as $result){
+//                        if($request->per_pc_meter === $result->per_pc_meter ){
+//                            $box->decrement('remainder', $boxHistory->length);
+//                        }
+//                    }
+//                } else {
+//                    return "Omborda ushbu materialdan siz so'rayotgan o'lcham yoki so'ralayotgan miqdorda mavjud emas.";
+//                }
+//            }
+////            Recalculate::dispatch($boxHistory);
+//            return $this->success('Box history done successfully', new StoreBoxHistoryResource($boxHistory));
+//        } else {
+//            return "Hozir hisobot kiritish vaqtidan tashqari vaqt, hisobot davri 7:00 dan 22:59 gacha ";
+//        }
 //                    }
 //                }
 //            }

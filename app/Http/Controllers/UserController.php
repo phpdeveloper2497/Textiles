@@ -23,8 +23,8 @@ class UserController extends Controller
 
     public function index()
     {
-            $user = User::all();
-            return $this->reply(UserResource::collection($user));
+        $user = User::all();
+        return $this->reply(UserResource::collection($user));
     }
 
     /**
@@ -79,22 +79,27 @@ class UserController extends Controller
         Gate::authorize('assignRole', User::class);
         $user = User::findOrFail($id);
         $user->assignRole($request->role);
-        return $this->success('Userga role berildi',$user);
+        return $this->success('Userga role berildi', $user);
     }
 
     public function removeRole(Request $request, $id)
     {
         Gate::authorize('removeRole', User::class);
+
         $user = User::findOrFail($id);
         $roleName = $request->input('role');
+
         if ($user->hasRole($roleName)) {
             $user->removeRole($roleName);
-            return $this->success( 'Rol foydalanuvchidan olib tashlandi');
-        } else {
-            return $this->success('Foydalanuvchida bunday rol mavjud emas');
-        }
-//        $user->removeRole($request->role);
-        return $this->success('Userdan rol o\'chirildi');
 
+            if ($user->roles->isEmpty()) {
+                return $this->success('Rol foydalanuvchidan olib tashlandi. Foydalanuvchida hech qanday roli qolmadi.');
+            } else {
+                return $this->success('Rol foydalanuvchidan olib tashlandi.');
+            }
+        } else {
+            return $this->success('Foydalanuvchida bunday rol mavjud emas.');
+        }
     }
+
 }

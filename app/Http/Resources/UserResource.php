@@ -20,12 +20,7 @@ class UserResource extends JsonResource
             'last_name' => $this->last_name,
             'phone' => $this->phone,
             'nickname' => $this->nickname,
-            'role' => $this->whenLoaded('roles', function () {
-                return [
-                    'id' => $this->roles->first()?->id,
-                    'name' => $this->roles->first()?->name,
-                ];
-            }),
+            'roles' => RoleListResource::collection($this->roles)
         ];
     }
 }

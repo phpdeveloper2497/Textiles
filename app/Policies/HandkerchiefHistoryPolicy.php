@@ -13,7 +13,7 @@ class HandkerchiefHistoryPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasRole(['admin','case_manager']);
+        return $user->hasRole(['admin','Ish boshqaruvchi']);
     }
 
     /**
@@ -21,7 +21,7 @@ class HandkerchiefHistoryPolicy
      */
     public function view(User $user, HandkerchiefHistory $handkerchiefHistory): bool
     {
-        return $user->hasRole(['admin','case_manager']);
+        return $user->hasRole(['admin','Ish boshqaruvchi']);
     }
 
     /**
@@ -29,7 +29,7 @@ class HandkerchiefHistoryPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasRole(['admin','case_manager']);
+        return $user->hasRole(['admin','Ish boshqaruvchi']);
     }
 
     /**
@@ -45,7 +45,7 @@ class HandkerchiefHistoryPolicy
      */
     public function delete(User $user, HandkerchiefHistory $handkerchiefHistory): bool
     {
-        return $user->hasRole(['admin','case_manager']);
+        return $user->hasRole(['admin','Ish boshqaruvchi']);
     }
 
     /**

@@ -13,7 +13,7 @@ class BoxHistoryPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasRole(['admin','warehouse_manager']);
+        return $user->hasRole(['admin','Ombor mudiri']);
     }
 
     /**
@@ -21,7 +21,7 @@ class BoxHistoryPolicy
      */
     public function view(User $user, BoxHistory $boxHistory): bool
     {
-        return $user->hasRole(['admin','warehouse_manager']);
+        return $user->hasRole(['admin','Ombor mudiri']);
     }
 
     /**
@@ -29,7 +29,7 @@ class BoxHistoryPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasRole(['admin','warehouse_manager']);
+        return $user->hasRole(['admin','Ombor mudiri']);
     }
 
     /**
@@ -45,7 +45,7 @@ class BoxHistoryPolicy
      */
     public function delete(User $user, BoxHistory $boxHistory): bool
     {
-        return $user->hasRole(['admin','warehouse_manager']);
+        return $user->hasRole(['admin','Ombor mudiri']);
     }
 
     /**
@@ -66,6 +66,6 @@ class BoxHistoryPolicy
 
     public function workshop(User $user, BoxHistory $boxHistory): bool
     {
-        return $user->hasRole(['admin','warehouse_manager']);
+        return $user->hasRole(['admin','Ombor mudiri']);
     }
 }

@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
             'phone' => '+998900818859',
             'password' => 'password'
         ]);
-        $user->assignRole('warehouse_manager');
+        $user->assignRole('Ombor mudiri');
 
         $user = User::create([
             'first_name' => 'case',
@@ -39,6 +39,6 @@ class UserSeeder extends Seeder
             'phone' => '+998900848859',
             'password' => 'password'
         ]);
-        $user->assignRole('case_manager');
+        $user->assignRole('Ish boshqaruvchi');
     }
 }

@@ -16,7 +16,7 @@ class BoxPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasRole(['admin','warehouse_manager']);
+        return $user->hasRole(['admin','Ombor mudiri']);
     }
 
     /**
@@ -24,7 +24,7 @@ class BoxPolicy
      */
     public function view(User $user, Box $box): bool
     {
-        return $user->hasRole(['admin','warehouse_manager']);
+        return $user->hasRole(['admin','Ombor mudiri']);
     }
 
     /**
@@ -32,7 +32,7 @@ class BoxPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasRole(['admin','warehouse_manager']);
+        return $user->hasRole(['admin','Ombor mudiri']);
     }
 
     /**

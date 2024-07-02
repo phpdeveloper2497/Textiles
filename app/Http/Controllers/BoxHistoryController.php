@@ -179,9 +179,8 @@ class BoxHistoryController extends Controller
             return $this->reply('Sizda bu yerga kirish uchun ruxsat yo\'q');
         } else {
             $boxHistories = BoxHistory::all();
-//            $start_day = Carbon::now()->startOfDay();
-            $start_day = Carbon::today()->setHour(17)->setMinute(01)->setSecond(0);
-            $end_day = Carbon::today()->setHour(17)->setMinute(05)->setSecond(0);
+            $start_day = Carbon::now()->startOfDay();
+            $end_day = Carbon::today()->setHour(01)->setMinute(59)->setSecond(0);
             $boxHistoryReport = $boxHistories->where("out_storage", "=", true)
                 ->whereBetween('created_at', [$start_day, $end_day]);
             if ($boxHistoryReport->isEmpty()) {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CheckRequest;
 use App\Http\Resources\BoxHistoryResource;
 use App\Http\Resources\InprogressBoxHistoryResource;
 use App\Http\Resources\StoreBoxHistoryResource;
@@ -64,120 +65,77 @@ class BoxHistoryController extends Controller
      */
     public function store(StoreBoxHistoryRequest $request)
     {
-//        $results = BoxHistory::select('box_id', 'per_pc_meter',
-//            \DB::raw('SUM(CASE WHEN in_storage = true THEN pc ELSE 0 END) as total_pc_in_storage'),
-//            \DB::raw('SUM(CASE WHEN returned = true THEN pc ELSE 0 END) as total_pc_returned'),
-//            \DB::raw('SUM(CASE WHEN out_storage = true THEN pc ELSE 0 END) as total_pc_out_storage')
-//        )
-//            ->where('box_id', $request->box_id)
-//            ->groupBy('box_id', 'per_pc_meter')
-//            ->get();
-//        foreach ($results as $result)
-////            dd($result->total_pc_returned );
-//            if ($request->out_storage === true) {
-//                if ($request->per_pc_meter === $result->per_pc_meter) {
-//                    if ($result->total_pc_in_storage + $result->total_pc_returned >= $request->pc) {
-
-
         Gate::authorize('create', BoxHistory::class);
-        $boxHistory = BoxHistory::create([
-            "box_id" => $request->box_id,
-            "user_id" => $request->user()->id,
-            "in_storage" => $request->in_storage,
-            "out_storage" => $request->out_storage,
-            "returned" => $request->returned,
-            "per_pc_meter" => $request->per_pc_meter,
-            "pc" => $request->pc,
-            "length" => $request->per_pc_meter * $request->pc,
-            "commentary" => $request->commentary
-        ]);
-
-
 
         $current_time = Carbon::now();
         $target_time_end_day = Carbon::today()->setHour(22)->setMinute(59)->setSecond(0);
         $target_time_start_day = Carbon::today()->setHour(7)->setMinute(00)->setSecond(0);
 
+        $length = $request->per_pc_meter * $request->pc;
+
         if ($current_time >= $target_time_start_day && $current_time <= $target_time_end_day) {
             $box = Box::query()->where('id', '=', $request->box_id)->first();
             if ($request->in_storage === true) {
-                $box->increment('remainder', $boxHistory->length);
+                $box->increment('remainder', $length);
             }
             if ($request->returned === true) {
-                $box->increment('remainder', $boxHistory->length);
+                $box->increment('remainder', $length);
             }
-            if ($request->out_storage === true && $request->pc <= $boxHistory->pc) {
+            //////*******************************////////////////////////////////////////////////////////
+
+            if ($request->out_storage === true) {
                 if ($box->remainder > 0) {
-                    $results = BoxHistory::select('box_id', 'per_pc_meter',)
+                    $results = BoxHistory::select('box_id', 'per_pc_meter', 'pc')
                         ->where('box_id', $box->id)
-                        ->groupBy('box_id', 'per_pc_meter')
+                        ->groupBy('box_id', 'per_pc_meter', 'pc')
                         ->get();
+
+                    $foundMatch = false;
+
                     foreach ($results as $result) {
                         if ($request->per_pc_meter === $result->per_pc_meter) {
-                            $box->decrement('remainder', $boxHistory->length);
+//                            dd($result->pc > 0);
+//                            dd( $request->pc <= $result->pc);
+//                            dd( $request->pc);
+                            dd( $result);
+                            dd($result->pc > 0 && $request->pc <= $result->pc);
+                            if ($result->pc > 0 && $request->pc <= $result->pc) {
+                                $foundMatch = true;
+                                $box->decrement('remainder', $length);
+                                break;
+                            } else {
+                                return "Omborda ushbu materialdan so'ralayotgan miqdor (rulon)da mavjud emas.";
+                            }
                         }
                     }
+
+                    if (!$foundMatch) {
+                        return "Omborda so'ralayotgan o'lchamdagi materialdan mavjud emas.";
+                    }
                 } else {
-                    return "Omborda ushbu materialdan siz so'rayotgan o'lcham yoki so'ralayotgan miqdorda mavjud emas.";
+                    return "Omborda ushbu materialdan mavjud emas.";
                 }
             }
-//            Recalculate::dispatch($boxHistory);
+
+            //////*******************************////////////////////////////////////////////////////////
+
+            $boxHistory = BoxHistory::create([
+                "box_id" => $request->box_id,
+                "user_id" => $request->user()->id,
+                "in_storage" => $request->in_storage,
+                "out_storage" => $request->out_storage,
+                "returned" => $request->returned,
+                "per_pc_meter" => $request->per_pc_meter,
+                "pc" => $request->pc,
+                "length" => $request->per_pc_meter * $request->pc,
+                "commentary" => $request->commentary
+            ]);
+            //            Recalculate::dispatch($boxHistory);
             return $this->success('Box history done successfully', new StoreBoxHistoryResource($boxHistory));
+
         } else {
             return "Hozir hisobot kiritish vaqtidan tashqari vaqt, hisobot davri 7:00 dan 22:59 gacha ";
         }
-//                    }
-//                }
-//            }
-
-//    }
-
-
-//        Gate::authorize('create', BoxHistory::class);
-//        $boxHistory = BoxHistory::create([
-//            "box_id" => $request->box_id,
-//            "user_id" => $request->user()->id,
-//            "in_storage" => $request->in_storage,
-//            "out_storage" => $request->out_storage,
-//            "returned" => $request->returned,
-//            "per_pc_meter" => $request->per_pc_meter,
-//            "pc" => $request->pc,
-//            "length" => $request->per_pc_meter * $request->pc,
-//            "commentary" => $request->commentary
-//        ]);
-//
-//        $current_time = Carbon::now();
-//        $target_time_end_day = Carbon::today()->setHour(22)->setMinute(59)->setSecond(0);
-//        $target_time_start_day = Carbon::today()->setHour(7)->setMinute(00)->setSecond(0);
-//
-//        if ($current_time >= $target_time_start_day && $current_time <= $target_time_end_day) {
-//            $box = Box::query()->where('id', '=', $request->box_id)->first();
-//            if ($request->in_storage === true) {
-//                $box->increment('remainder', $boxHistory->length);
-//            }
-//            if ($request->returned === true) {
-//                $box->increment('remainder', $boxHistory->length);
-//            }
-//            if ($request->out_storage === true && $request->pc<=$boxHistory->pc) {
-//                if ($box->remainder > 0){
-//                    $results = BoxHistory::select('box_id', 'per_pc_meter',)
-//                        ->where('box_id', $box->id)
-//                        ->groupBy('box_id', 'per_pc_meter')
-//                        ->get();
-//                    foreach ($results as $result){
-//                        if($request->per_pc_meter === $result->per_pc_meter ){
-//                            $box->decrement('remainder', $boxHistory->length);
-//                        }
-//                    }
-//                } else {
-//                    return "Omborda ushbu materialdan siz so'rayotgan o'lcham yoki so'ralayotgan miqdorda mavjud emas.";
-//                }
-//            }
-////            Recalculate::dispatch($boxHistory);
-//            return $this->success('Box history done successfully', new StoreBoxHistoryResource($boxHistory));
-//        } else {
-//            return "Hozir hisobot kiritish vaqtidan tashqari vaqt, hisobot davri 7:00 dan 22:59 gacha ";
-//        }
 
     }
 
@@ -226,10 +184,27 @@ class BoxHistoryController extends Controller
             $boxHistoryReport = $boxHistories->where("out_storage", "=", true)
                 ->whereBetween('created_at', [$start_day, $end_day]);
             if ($boxHistoryReport->isEmpty()) {
-                return $this->error('Sexda ish jarayonida material yo\'q');
+                return $this->reply('Sexda ish jarayonida material yo\'q');
             } else {
                 return new InprogressBoxHistoryResource($boxHistoryReport->first());
             }
         }
+    }
+
+
+    public
+    function check(Request $request)
+    {
+//        dd($request);
+        $results = array(1, 2, 3, 4, 5, 6, 7, 8, 9);
+        if ($request->has('a')) {
+            $inputValue = $request->input('a');
+            foreach ($results as $result) {
+                if ($inputValue == $result) {
+                    return $result;
+                }
+            }
+        }
+        return 'day';
     }
 }

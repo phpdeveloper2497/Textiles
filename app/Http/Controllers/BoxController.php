@@ -83,7 +83,6 @@ class BoxController extends Controller
 
             $finalResults = $results->map(function ($result) {
                 $remaining_pc = $result->total_pc_in_storage + $result->total_pc_returned - $result->total_pc_out_storage;
-//            dd($remaining_pc);
 
                 return [
                     'size_material' => $result->per_pc_meter,

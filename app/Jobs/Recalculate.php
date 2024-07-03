@@ -45,7 +45,7 @@ class Recalculate implements ShouldQueue
             if (abs($in_progress_material) > 1 ){
                 $boxhistory = BoxHistory::create([
                     "box_id" => $box->id,
-                    "user_id" => 2,
+                    "user_id" => auth()->user(),
                     "in_storage" => 0,
                     "out_storage" => 0,
                     "returned" => 1,
@@ -57,7 +57,7 @@ class Recalculate implements ShouldQueue
 
                 $boxhistory = BoxHistory::create([
                     "box_id" => $box->id,
-                    "user_id" => 2,
+                    "user_id" => auth()->user(),
                     "in_storage" => 0,
                     "out_storage" => 1,
                     "returned" => 0,

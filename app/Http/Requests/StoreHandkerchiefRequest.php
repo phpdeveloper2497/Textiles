@@ -25,7 +25,8 @@ class StoreHandkerchiefRequest extends FormRequest
             "box_id" =>[
                 "required",
                 "exists:boxes,id",
-                "numeric"
+                "numeric",
+                "unique:handkerchiefs,box_id",
             ],
             "name" => ["required","string","unique:handkerchiefs,name"],
             "sort_plane" => ["required","string","unique:handkerchiefs,sort_plane"],
@@ -37,6 +38,7 @@ class StoreHandkerchiefRequest extends FormRequest
     {
         return [
             "name.unique" => "Bu nom allaqachon yaratilgan",
+            "box_id.unique" => "Bu material mahsuloti uchun joy allaqachon yaratilgan",
             "sort_plane.unique" => "Omborxonada bunday nomli joy allaqachon yaratilgan",
             'sort_plane.string' => 'Saralash boʻyicha beriladigan maydon qatori so\'z bo\'lishi kerak.',
             "image.max" => "Rasm maydoni 1024 kilobaytdan oshmasligi kerak",

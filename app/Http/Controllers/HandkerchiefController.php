@@ -43,7 +43,7 @@ class HandkerchiefController extends Controller
         ]);
         if ($request->file('image')) {
             $path = $request->file('image')->store('handkerchiefs/' . $handkerchief->id, 'public');
-            $handkerchief->image_path=$path;
+            $handkerchief->image_path = $path;
             $handkerchief->save();
         };
         return $this->reply($handkerchief);
@@ -54,9 +54,9 @@ class HandkerchiefController extends Controller
      */
     public function show(Request $request, Handkerchief $handkerchief)
     {
-        if(!Gate::authorize('view', $handkerchief)){
+        if (!Gate::authorize('view', $handkerchief)) {
             return response()->json(["Sizda bu yerga kirish uchun ruxsat yo'q"], 403);
-        }else{
+        } else {
 //            if ($request->filled('storage_in')) {
 //               return HandkerchiefHistoryResource::collection($handkerchief->handkerchiefHistories()->where("storage_in",'=', true)->get());
 //            }
@@ -74,11 +74,11 @@ class HandkerchiefController extends Controller
 
     public function viewHandkerchiefHistory(Request $request, Handkerchief $handkerchief)
     {
-        if(!Gate::authorize('view', $handkerchief)){
+        if (!Gate::authorize('view', $handkerchief)) {
             return response()->json(["Sizda bu yerga kirish uchun ruxsat yo'q"], 403);
-        }else{
+        } else {
             if ($request->filled('storage_in')) {
-               return HandkerchiefHistoryResource::collection($handkerchief->handkerchiefHistories()->where("storage_in",'=', true)->get());
+                return HandkerchiefHistoryResource::collection($handkerchief->handkerchiefHistories()->where("storage_in", '=', true)->get());
             }
             if ($request->filled('sold_out')) {
                 return HandkerchiefHistoryResource::collection($handkerchief->handkerchiefHistories()->where('sold_out', '=', true)->get());
@@ -87,14 +87,12 @@ class HandkerchiefController extends Controller
     }
 
 
-
-
     public function update(UpdateHandkerchiefRequest $request, Handkerchief $handkerchief)
     {
         Gate::authorize('update', Handkerchief::class);
-            $handkerchief->name = $request->name;
-            $handkerchief->sort_plane = $request->sort_plane;
-            $handkerchief->save();
+        $handkerchief->name = $request->name;
+        $handkerchief->sort_plane = $request->sort_plane;
+        $handkerchief->save();
     }
 
     /**
@@ -104,37 +102,38 @@ class HandkerchiefController extends Controller
     {
         Gate::authorize('delete', Handkerchief::class);
         Storage::disk('public')->delete("$handkerchief->image_path");
-        File::DeleteDirectory('storage/' . 'boxes/' . "$handkerchief->id");
+        File::DeleteDirectory('storage/' . 'handkerchief/' . "$handkerchief->id");
         $handkerchief->delete();
         return "handkerchief deleted successfully";
     }
 
     public function sold(SoldHandkerchiefRequest $request, Handkerchief $handkerchief)
     {
-        dd($request->user()->id);
-//        $handkerchief =Handkerchief::findOrFail($request->id);
-//        if (!Gate::allows('sold', HandkerchiefHistory::class)) {
-//            return response()->json(["Sizda bu yerga kirish uchun ruxsat yo'q"], 403);
-//        } else {
-        $handkerchiefHistory = HandkerchiefHistory::create([
-            'user_id' => $request->user()->id,
-            'handkerchief_id' => $request->handkerchief_id,
-            'storage_in' => 0,
-            'all_products' => 0,
-            'finished_products' => 0,
-            'defective_products' => 0,
-            "sold_out" => $request->sold_out,
-            "sold_products" => $request->sold_products,
-            "sold_defective_products" => $request->sold_defective_products]);
-
-        if ($request->sold_out === true && $handkerchiefHistory->sold_products < $handkerchief->finished_products && $handkerchiefHistory->sold_defective_products < $handkerchief->defective_products) {
-            $handkerchief->finished_products -= $handkerchiefHistory->sold_products;
-            $handkerchief->defective_products -= $handkerchiefHistory->sold_defective_products;
-            $handkerchief->save();
+//        dd($request->user()->id);
+        $handkerchief = Handkerchief::findOrFail($request->id);
+        if (!Gate::allows('sold', HandkerchiefHistory::class)) {
+            return response()->json(["Sizda bu yerga kirish uchun ruxsat yo'q"], 403);
         } else {
-            return 'Mahsulot yetarli emas';
+            $handkerchiefHistory = HandkerchiefHistory::create([
+                'user_id' => $request->user()->name,
+                'handkerchief_id' => $request->handkerchief_id,
+                'storage_in' => 0,
+                'all_products' => 0,
+                'finished_products' => 0,
+                'defective_products' => 0,
+                "sold_out" => $request->sold_out,
+                "sold_products" => $request->sold_products,
+                "sold_defective_products" => $request->sold_defective_products]);
+
+            if ($request->sold_out === true && $handkerchiefHistory->sold_products < $handkerchief->finished_products && $handkerchiefHistory->sold_defective_products < $handkerchief->defective_products) {
+                $handkerchief->finished_products -= $handkerchiefHistory->sold_products;
+                $handkerchief->defective_products -= $handkerchiefHistory->sold_defective_products;
+                $handkerchief->save();
+            } else {
+                return 'Mahsulot yetarli emas';
+            }
+            return $this->success('Sotilgan mahsulot', $handkerchiefHistory);
         }
-        return $this->success('Sotilgan mahsulot', $handkerchiefHistory);
     }
 
 }

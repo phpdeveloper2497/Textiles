@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SoldHandkerchiefRequest;
 use App\Http\Resources\HandkerchiefHistoryResource;
+use App\Http\Resources\SoldHandkerchiefResource;
 use App\Models\Handkerchief;
 use App\Models\HandkerchiefHistory;
 use App\Http\Requests\StoreHandkerchiefHistoryRequest;
@@ -25,7 +26,7 @@ class HandkerchiefHistoryController extends Controller
      */
     public function index(Request $request)
     {
-        Gate::authorize('viewAny', HandkerchiefHistory::class);
+//        Gate::authorize('viewAny', HandkerchiefHistory::class);
         $handkerchiefHistory = HandkerchiefHistory::with('handkerchief');
 
         if ($request->filled('storage_in')) {
@@ -68,7 +69,7 @@ class HandkerchiefHistoryController extends Controller
 
     public function store(StoreHandkerchiefHistoryRequest $request)
     {
-        Gate::authorize('create', HandkerchiefHistory::class);
+//            Gate::authorize('create', HandkerchiefHistory::class);
         $handkerchief = Handkerchief::find($request->handkerchief_id);
 //dd($handkerchief->box->boxHistories->where("in_storage","=", true));
 //if ($handkerchief->box->out_storage)
@@ -213,7 +214,8 @@ class HandkerchiefHistoryController extends Controller
         } else {
             return 'Mahsulot yetarli emas';
         }
-        return $this->success('Sotilgan mahsulot', $handkerchiefHistory);
+        return new SoldHandkerchiefResource($handkerchiefHistory);
+//        return $this->success('Sotilgan mahsulot', $handkerchiefHistory);
     }
     }
 }

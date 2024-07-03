@@ -180,7 +180,7 @@ class BoxHistoryController extends Controller
         } else {
             $boxHistories = BoxHistory::all();
             $start_day = Carbon::now()->startOfDay();
-            $end_day = Carbon::today()->setHour(01)->setMinute(59)->setSecond(0);
+            $end_day = Carbon::today()->setHour(07)->setMinute(0)->setSecond(0);
             $boxHistoryReport = $boxHistories->where("out_storage", "=", true)
                 ->whereBetween('created_at', [$start_day, $end_day]);
             if ($boxHistoryReport->isEmpty()) {

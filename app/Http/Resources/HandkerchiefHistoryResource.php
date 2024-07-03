@@ -25,6 +25,7 @@ class HandkerchiefHistoryResource extends JsonResource
             'defective_products' => $this->defective_products,
             'sold_products' => $this->sold_products,
             'sold_defective_products' => $this->sold_defective_products,
+            'sold_all_products' => $this->sold_products +$this->sold_defective_products,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

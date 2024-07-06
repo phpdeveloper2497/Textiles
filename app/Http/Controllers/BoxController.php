@@ -45,8 +45,7 @@ class BoxController extends Controller
     {
         if (!Gate::allows('create', Box::class)) {
             return response()->json(["Sizda bu yerga kirish uchun ruxsat yo'q"], 403);
-        }
-        else {
+        } else {
             $this->boxRepository->create($request);
             return $this->success('Box created successfully');
         }
@@ -90,7 +89,11 @@ class BoxController extends Controller
                     'length' => $remaining_pc * $result->per_pc_meter
                 ];
             });
-            return response()->json($finalResults);
+            if ($results->isEmpty()) {
+                return "Omborda material yo'q";
+            } else {
+                return response()->json($finalResults);
+            }
         }
     }
 

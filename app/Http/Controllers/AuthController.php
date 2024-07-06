@@ -35,7 +35,7 @@ class AuthController extends Controller
             'nickname' => $request->nickname,
             'phone' => $request->phone,
         ]);
-        $user->assignRole('worker');
+//        $user->assignRole('worker');
         auth()->login($user);
         return $this->success('You registered successfully',
             ['token' => $user->createToken($request->nickname)->plainTextToken]

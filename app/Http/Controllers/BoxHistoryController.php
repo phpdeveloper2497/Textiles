@@ -14,7 +14,6 @@ use App\Http\Requests\UpdateBoxHistoryRequest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use function Laravel\Prompts\error;
 
 class BoxHistoryController extends Controller
 {
@@ -85,21 +84,22 @@ class BoxHistoryController extends Controller
 
             if ($request->out_storage === true) {
                 if ($box->remainder > 0) {
-                    $results = BoxHistory::select('box_id', 'per_pc_meter', 'pc')
-                        ->where('box_id', $box->id)
-                        ->groupBy('box_id', 'per_pc_meter', 'pc')
-                        ->get();
 
+                    $results = BoxHistory::select('box_id', 'per_pc_meter',
+                        \DB::raw('SUM(CASE WHEN in_storage = true THEN pc ELSE 0 END) as total_pc_in_storage'),
+                        \DB::raw('SUM(CASE WHEN returned = true THEN pc ELSE 0 END) as total_pc_returned'),
+                        \DB::raw('SUM(CASE WHEN out_storage = true THEN pc ELSE 0 END) as total_pc_out_storage'),
+                    )
+                        ->where('box_id', $box->id)
+                        ->groupBy('box_id', 'per_pc_meter')
+                        ->get();
                     $foundMatch = false;
 
                     foreach ($results as $result) {
+
                         if ($request->per_pc_meter === $result->per_pc_meter) {
-//                            dd($result->pc > 0);
-//                            dd( $request->pc <= $result->pc);
-//                            dd( $request->pc);
-//                            dd( $result);
-//                            dd($result->pc > 0 && $request->pc <= $result->pc);
-                            if ($result->pc > 0 && $request->pc <= $result->pc) {
+                            $remaining = $result->total_pc_in_storage - $result->total_pc_out_storage + $result->total_pc_returned;
+                            if ($remaining > 0 && $request->pc <= $remaining) {
                                 $foundMatch = true;
                                 $box->decrement('remainder', $length);
                                 break;
@@ -180,7 +180,7 @@ class BoxHistoryController extends Controller
         } else {
             $boxHistories = BoxHistory::all();
             $start_day = Carbon::now()->startOfDay();
-            $end_day = Carbon::today()->setHour(07)->setMinute(0)->setSecond(0);
+            $end_day = Carbon::today()->setHour(06)->setMinute(50)->setSecond(0);
             $boxHistoryReport = $boxHistories->where("out_storage", "=", true)
                 ->whereBetween('created_at', [$start_day, $end_day]);
             if ($boxHistoryReport->isEmpty()) {
@@ -191,20 +191,4 @@ class BoxHistoryController extends Controller
         }
     }
 
-
-    public
-    function check(Request $request)
-    {
-//        dd($request);
-        $results = array(1, 2, 3, 4, 5, 6, 7, 8, 9);
-        if ($request->has('a')) {
-            $inputValue = $request->input('a');
-            foreach ($results as $result) {
-                if ($inputValue == $result) {
-                    return $result;
-                }
-            }
-        }
-        return 'day';
-    }
 }

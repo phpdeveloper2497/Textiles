@@ -131,7 +131,7 @@ class BoxHistoryController extends Controller
                 "commentary" => $request->commentary
             ]);
             //            Recalculate::dispatch($boxHistory);
-            return $this->success('Box history done successfully', new StoreBoxHistoryResource($boxHistory));
+            return $this->success('Mahsulot tarixi muvoffaqiyatli yaratildi', new StoreBoxHistoryResource($boxHistory));
 
         } else {
             return "Hozir hisobot kiritish vaqtidan tashqari vaqt, hisobot davri 7:00 dan 22:59 gacha ";
@@ -143,11 +143,10 @@ class BoxHistoryController extends Controller
      * Display the specified resource.
      */
 
-    public
-    function show(Request $request, BoxHistory $boxHistory)
+    public  function show(Request $request, BoxHistory $boxHistory)
     {
-        Gate::authorize('view', BoxHistory::class);
-
+//        Gate::authorize('view', BoxHistory::class);
+//        dd($request->id);
     }
 
     /**
@@ -168,7 +167,7 @@ class BoxHistoryController extends Controller
         Gate::authorize('delete', $boxHistory);
         if (auth()->user()) {
             $boxHistory->delete();
-            return $this->success('Box History deleted successfully');
+            return $this->success('Tarix muvofaqqiyatli o\'chirildi');
         }
     }
 

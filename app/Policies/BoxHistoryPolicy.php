@@ -30,6 +30,7 @@ class BoxHistoryPolicy
     public function create(User $user): bool
     {
         return $user->hasRole(['admin','Ombor mudiri']);
+//        return true;
     }
 
     /**

@@ -36,10 +36,12 @@ class Recalculate implements ShouldQueue
             $outgoing_materials = $box->boxHistories->where('out_storage', '=', true)->sum('length');
             $plan_amount = $outgoing_materials * $box->per_liner_meter;
             $handkerchiefs_all = $box->handkerchief->sum('all_products');
-            $handkerchiefs_finish = $box->handkerchief->handkerchiefHistories()->where("sold_out", "=", true)->sum('sold_products');
-            $handkerchiefs_defect = $box->handkerchief->handkerchiefHistories()->where("sold_out", "=", true)->sum('sold_defective_products');
-            $all_finished_products = $handkerchiefs_all + $handkerchiefs_finish + $handkerchiefs_defect;
-            $in_progress = $plan_amount - $all_finished_products;
+//            $handkerchiefs_finish = $box->handkerchief->handkerchiefHistories()->where("sold_out", "=", true)->sum('sold_products');
+//            $handkerchiefs_defect = $box->handkerchief->handkerchiefHistories()->where("sold_out", "=", true)->sum('sold_defective_products');
+//            $all_finished_products = $handkerchiefs_all + $handkerchiefs_finish + $handkerchiefs_defect;
+//            $all_finished_products = $handkerchiefs_finish + $handkerchiefs_defect;
+
+            $in_progress = $plan_amount - $handkerchiefs_all;
             $in_progress_material = $in_progress / $box->per_liner_meter;
             // if(abs($in_progress) > 5 dona ){}
             if (abs($in_progress_material) > 1 ){

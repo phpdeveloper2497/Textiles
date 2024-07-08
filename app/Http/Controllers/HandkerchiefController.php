@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ShowHandkerchiefRequest;
 use App\Http\Requests\SoldHandkerchiefRequest;
 use App\Http\Resources\HandkerchiefByIDResource;
 use App\Http\Resources\HandkerchiefHistoryResource;

@@ -47,7 +47,7 @@ class BoxController extends Controller
             return response()->json(["Sizda bu yerga kirish uchun ruxsat yo'q"], 403);
         } else {
             $this->boxRepository->create($request);
-            return $this->success('Box created successfully');
+            return $this->success('Omborda yangi mahsulot uchun joy ajratildi');
         }
     }
 
@@ -89,11 +89,9 @@ class BoxController extends Controller
                     'length' => $remaining_pc * $result->per_pc_meter
                 ];
             });
-            if ($results->isEmpty()) {
-                return "Omborda material yo'q";
-            } else {
+
                 return response()->json($finalResults);
-            }
+
         }
     }
 

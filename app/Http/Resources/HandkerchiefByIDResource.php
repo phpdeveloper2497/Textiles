@@ -26,7 +26,7 @@ class HandkerchiefByIDResource extends JsonResource
             'all_products' => $this->all_products,
             'finished_products' => $this->finished_products,
             'defective_products' => $this->defective_products,
-            'not_packaged' => $notPackaged,
+//            'not_packaged' => $notPackaged,
         ];
     }
 }

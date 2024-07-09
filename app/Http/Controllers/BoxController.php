@@ -46,7 +46,17 @@ class BoxController extends Controller
         if (!Gate::allows('create', Box::class)) {
             return response()->json(["Sizda bu yerga kirish uchun ruxsat yo'q"], 403);
         } else {
-            $this->boxRepository->create($request);
+//            $this->boxRepository->create($request);
+            $box = Box::create([
+                'name' => $request->get('name'),
+                'per_liner_meter' => $request->get('per_liner_meter'),
+                'sort_by' => $request->get('sort_by')
+            ]);
+            if ($request->file('image')) {
+                $path = $request->file('image')->store('boxes/' . $box->id, 'public');
+                $box->image_path=$path;
+                $box->save();
+            };
             return $this->success('Omborda yangi mahsulot uchun joy ajratildi');
         }
     }

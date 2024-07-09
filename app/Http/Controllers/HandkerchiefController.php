@@ -99,16 +99,15 @@ class HandkerchiefController extends Controller
      */
     public function destroy(Handkerchief $handkerchief)
     {
-        Gate::authorize('delete', Handkerchief::class);
+        Gate::authorize('delete', $handkerchief);
         Storage::disk('public')->delete("$handkerchief->image_path");
         File::DeleteDirectory('storage/' . 'handkerchief/' . "$handkerchief->id");
         $handkerchief->delete();
-        return "handkerchief deleted successfully";
+        return "$handkerchief->name mahsulot ombori o'chirildi";
     }
 
     public function sold(SoldHandkerchiefRequest $request, Handkerchief $handkerchief)
     {
-//        dd($request->user()->id);
         $handkerchief = Handkerchief::findOrFail($request->id);
         if (!Gate::allows('sold', HandkerchiefHistory::class)) {
             return response()->json(["Sizda bu yerga kirish uchun ruxsat yo'q"], 403);

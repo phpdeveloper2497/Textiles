@@ -16,6 +16,7 @@ class StoreBoxHistoryResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'box_name' => $this->box->name,
             "box_id" => $this->box_id,
             'user' => $this->user->nickname,
             "per_pc_meter" => $this->per_pc_meter,

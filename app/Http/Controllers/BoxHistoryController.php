@@ -106,6 +106,8 @@ class BoxHistoryController extends Controller
                             } else {
                                 return "Omborda ushbu materialdan so'ralayotgan miqdor (rulon)da mavjud emas.";
                             }
+                        }else{
+                            return "Omborda so'ralayotgan o'lchamdagi materialdan mavjud emas.";
                         }
                     }
 

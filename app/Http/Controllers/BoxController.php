@@ -46,7 +46,7 @@ class BoxController extends Controller
         if (!Gate::allows('create', Box::class)) {
             return response()->json(["Sizda bu yerga kirish uchun ruxsat yo'q"], 403);
         } else {
-//            $this->boxRepository->create($request);
+            //            $this->boxRepository->create($request);
             $box = Box::create([
                 'name' => $request->get('name'),
                 'per_liner_meter' => $request->get('per_liner_meter'),

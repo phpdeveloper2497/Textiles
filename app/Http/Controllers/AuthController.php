@@ -34,6 +34,7 @@ class AuthController extends Controller
             'last_name' => $request->last_name,
             'nickname' => $request->nickname,
             'phone' => $request->phone,
+            'password' => $request->password
         ]);
 //        $user->assignRole('worker');
         auth()->login($user);

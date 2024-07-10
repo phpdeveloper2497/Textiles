@@ -36,6 +36,8 @@ class StoreHandkerchiefRequest extends FormRequest
     }
     public function messages()
     {
+
+
         return [
             "box_id.required" => "Mahsulot uchun material tanlash shart",
             "name.unique" => "Bu nom allaqachon yaratilgan",

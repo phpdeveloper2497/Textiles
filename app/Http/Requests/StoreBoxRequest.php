@@ -33,6 +33,8 @@ class StoreBoxRequest extends FormRequest
     public function messages()
     {
         return [
+            "name.required" => "Mahsulot nomi kiritilishi shart",
+            "sort_by.required" => "Omborda joy nomi kiritilishi shart",
             "name.unique" => "Bu nom allaqachon yaratilgan",
             "sort_by.unique" => "Omborxonada bunday nomli joy allaqachon yaratilgan",
             'sort_by.string' => 'Saralash boʻyicha beriladigan maydon qatori so\'z bo\'lishi kerak.',

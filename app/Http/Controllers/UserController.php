@@ -76,10 +76,13 @@ class UserController extends Controller
 
     public function assignRole(Request $request, $id)
     {
-        Gate::authorize('assignRole', User::class);
+       if(!Gate::authorize('assignRole', User::class)){
+                     return response()->json(["Sizda lavozim tayinlash huquqi mavjud emas"],);
+       }else{
         $user = User::findOrFail($id);
         $user->assignRole($request->role);
         return $this->success('Userga role berildi', $user);
+       }
     }
 
     public function removeRole(Request $request, $id)

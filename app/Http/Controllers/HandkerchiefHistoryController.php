@@ -102,7 +102,9 @@ class HandkerchiefHistoryController extends Controller
             }
             return new HandkerchiefHistoryResource($handkerchiefHistory);
         } else {
-            return "Hozir hisobot kiritish vaqtidan tashqari vaqt, hisobot davri 7:00 dan 22:59 gacha ";
+            throw ValidationException::withMessages([
+                'message' => "Hozir hisobot kiritish vaqtidan tashqari vaqt, hisobot davri 7:00 dan 22:59 gacha "
+            ]);
         }
     }
 

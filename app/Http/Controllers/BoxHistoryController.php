@@ -117,7 +117,9 @@ class BoxHistoryController extends Controller
                             ]);
                     }
                 } else {
-                    return "Omborda ushbu materialdan mavjud emas.";
+                    throw ValidationException::withMessages([
+                        'message' => "Omborda ushbu materialdan mavjud emas."
+                    ]);
                 }
             }
 
@@ -138,7 +140,9 @@ class BoxHistoryController extends Controller
             return $this->success('Mahsulot tarixi muvoffaqiyatli yaratildi', new StoreBoxHistoryResource($boxHistory));
 
         } else {
-            return "Hozir hisobot kiritish vaqtidan tashqari vaqt, hisobot davri 7:00 dan 22:59 gacha ";
+            throw ValidationException::withMessages([
+                'message' => "Hozir hisobot kiritish vaqtidan tashqari vaqt, hisobot davri 7:00 dan 22:59 gacha "
+            ]);
         }
 
     }

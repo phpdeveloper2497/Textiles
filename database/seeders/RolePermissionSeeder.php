@@ -66,9 +66,18 @@ class RolePermissionSeeder extends Seeder
             Permission::create(['name' => 'handkerchiefHistory:sold']),
         ];
 
+        $SoldHankerchiefPermissions =[
+            Permission::create(['name' => 'SoldHankerchief:viewAny']),
+            Permission::create(['name' => 'SoldHankerchief:view']),
+            Permission::create(['name' => 'SoldHankerchief:create']),
+            Permission::create(['name' => 'SoldHankerchief:update']),
+            Permission::create(['name' => 'SoldHankerchief:delete']),
+        ];
+
+
 
         $admin = Role::create(['name' => 'admin', 'guard_name' => 'web']);
-        $admin->syncPermissions($permissions,$userPermissions,$boxPermissions,$boxHistoryPermissions,$handkerchiefPermissions,$handkerchiefHistoryPermissions);
+        $admin->syncPermissions($permissions,$userPermissions,$boxPermissions,$boxHistoryPermissions,$handkerchiefPermissions,$handkerchiefHistoryPermissions,$SoldHankerchiefPermissions);
 
         $Ombor_mudiri = Role::create(['name' => 'Ombor mudiri', 'guard_name' => 'web']);
         $Ombor_mudiri->syncPermissions($boxPermissions,$boxHistoryPermissions,'user:viewAny');

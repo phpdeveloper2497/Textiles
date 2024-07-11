@@ -6,11 +6,13 @@ use App\Models\Box;
 use App\Models\BoxHistory;
 use App\Models\Handkerchief;
 use App\Models\HandkerchiefHistory;
+use App\Models\SoldHankerchief;
 use App\Models\User;
 use App\Policies\BoxHistoryPolicy;
 use App\Policies\BoxPolicy;
 use App\Policies\HandkerchiefHistoryPolicy;
 use App\Policies\HandkerchiefPolicy;
+use App\Policies\SoldHandkerchiefPolicy;
 use App\Policies\UserPolicy;
 use App\Repositories\Contracts\BoxHistoryRepositoryInterface;
 use App\Repositories\Contracts\BoxRepositoryInterface;
@@ -46,5 +48,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(BoxHistory::class, BoxHistoryPolicy::class);
         Gate::policy(Handkerchief::class, HandkerchiefPolicy::class);
         Gate::policy(HandkerchiefHistory::class, HandkerchiefHistoryPolicy::class);
+        Gate::policy(SoldHankerchief::class, SoldHandkerchiefPolicy::class);
     }
 }

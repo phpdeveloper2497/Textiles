@@ -5,6 +5,7 @@ use App\Http\Controllers\BoxController;
 use App\Http\Controllers\BoxHistoryController;
 use App\Http\Controllers\HandkerchiefController;
 use App\Http\Controllers\HandkerchiefHistoryController;
+use App\Http\Controllers\SoldHankerchiefController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -57,6 +58,7 @@ Route::apiResources([
     'boxes' => BoxController::class,
     'box-histories' => BoxHistoryController::class,
     'handkerchiefs' => HandkerchiefController::class,
-    'handkerchief-histories' => HandkerchiefHistoryController::class
+    'handkerchief-histories' => HandkerchiefHistoryController::class,
+//    "soldhandkerchiefs" =>SoldHankerchiefController::class,
 ]);
 });

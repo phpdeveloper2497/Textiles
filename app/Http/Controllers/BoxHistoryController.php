@@ -108,8 +108,7 @@ class BoxHistoryController extends Controller
                             }
                         }
                     }
-
-                    if (!$foundMatch) {
+                        if (!$foundMatch) {
                         return "Omborda so'ralayotgan o'lchamdagi materialdan mavjud emas.";
                     }
                 } else {

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Handkerchief extends Model
 {
@@ -21,5 +22,10 @@ class Handkerchief extends Model
     public function box(): BelongsTo
     {
         return $this->belongsTo(Box::class);
+    }
+
+    public function soldhendkerchief() :HasOne
+    {
+        return $this->hasOne(SoldHankerchief::class);
     }
 }

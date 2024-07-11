@@ -14,6 +14,7 @@ use App\Http\Requests\UpdateBoxHistoryRequest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\ValidationException;
 
 class BoxHistoryController extends Controller
 {
@@ -104,12 +105,16 @@ class BoxHistoryController extends Controller
                                 $box->decrement('remainder', $length);
                                 break;
                             } else {
-                                return "Omborda ushbu materialdan so'ralayotgan miqdor (rulon)da mavjud emas.";
+                                throw ValidationException::withMessages([
+                                    'message' => 'Omborda ushbu materialdan so\'ralayotgan miqdor (rulon)da mavjud emas.'
+                                ]);
                             }
                         }
                     }
                         if (!$foundMatch) {
-                        return "Omborda so'ralayotgan o'lchamdagi materialdan mavjud emas.";
+                            throw ValidationException::withMessages([
+                                'message' => "Omborda so'ralayotgan o'lchamdagi materialdan mavjud emas."
+                            ]);
                     }
                 } else {
                     return "Omborda ushbu materialdan mavjud emas.";

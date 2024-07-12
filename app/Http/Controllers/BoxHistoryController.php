@@ -111,10 +111,10 @@ class BoxHistoryController extends Controller
                             }
                         }
                     }
-                        if (!$foundMatch) {
-                            throw ValidationException::withMessages([
-                                'message' => "Omborda so'ralayotgan o'lchamdagi materialdan mavjud emas."
-                            ]);
+                    if (!$foundMatch) {
+                        throw ValidationException::withMessages([
+                            'message' => "Omborda so'ralayotgan o'lchamdagi materialdan mavjud emas."
+                        ]);
                     }
                 } else {
                     throw ValidationException::withMessages([
@@ -136,8 +136,8 @@ class BoxHistoryController extends Controller
                 "length" => $request->per_pc_meter * $request->pc,
                 "commentary" => $request->commentary
             ]);
-            //            Recalculate::dispatch($boxHistory);
-            return $this->success('Mahsulot tarixi muvoffaqiyatli yaratildi', new StoreBoxHistoryResource($boxHistory));
+            Recalculate::dispatch($boxHistory);
+            return $this->success('Mahsulot hisoboti muvoffaqiyatli yaratildi', new StoreBoxHistoryResource($boxHistory));
 
         } else {
             throw ValidationException::withMessages([
@@ -151,7 +151,7 @@ class BoxHistoryController extends Controller
      * Display the specified resource.
      */
 
-    public  function show(Request $request, BoxHistory $boxHistory)
+    public function show(Request $request, BoxHistory $boxHistory)
     {
 //        Gate::authorize('view', BoxHistory::class);
 //        dd($request->id);
@@ -183,7 +183,9 @@ class BoxHistoryController extends Controller
     function workshop(BoxHistory $boxHistory)
     {
         if (!Gate::authorize('workshop', $boxHistory)) {
-            return $this->reply('Sizda bu yerga kirish uchun ruxsat yo\'q');
+            throw ValidationException::withMessages([
+                'message' => "Sizda bu yerga kirish uchun ruxsat yo'q"
+            ]);
         } else {
             $boxHistories = BoxHistory::all();
             $start_day = Carbon::now()->startOfDay();

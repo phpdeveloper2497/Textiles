@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class HandkerchiefController extends Controller
 {
@@ -54,7 +55,9 @@ class HandkerchiefController extends Controller
     public function show(Request $request, Handkerchief $handkerchief)
     {
         if (!Gate::authorize('view', $handkerchief)) {
-            return response()->json(["Sizda bu yerga kirish uchun ruxsat yo'q"], 403);
+            throw ValidationException::withMessages([
+                'message' => "Sizda bu yerga kirish uchun ruxsat yo'q"
+            ]);
         } else {
 //            if ($request->filled('storage_in')) {
 //               return HandkerchiefHistoryResource::collection($handkerchief->handkerchiefHistories()->where("storage_in",'=', true)->get());
@@ -74,7 +77,9 @@ class HandkerchiefController extends Controller
     public function viewHandkerchiefHistory(Request $request, Handkerchief $handkerchief)
     {
         if (!Gate::authorize('view', $handkerchief)) {
-            return response()->json(["Sizda bu yerga kirish uchun ruxsat yo'q"], 403);
+            throw ValidationException::withMessages([
+                'message' => "Sizda bu yerga kirish uchun ruxsat yo'q"
+            ]);
         } else {
             if ($request->filled('storage_in')) {
                 return HandkerchiefHistoryResource::collection($handkerchief->handkerchiefHistories()->where("storage_in", '=', true)->get());
@@ -110,7 +115,9 @@ class HandkerchiefController extends Controller
     {
         $handkerchief = Handkerchief::findOrFail($request->id);
         if (!Gate::allows('sold', HandkerchiefHistory::class)) {
-            return response()->json(["Sizda bu yerga kirish uchun ruxsat yo'q"], 403);
+            throw ValidationException::withMessages([
+                'message' => "Sizda bu yerga kirish uchun ruxsat yo'q"
+            ]);
         } else {
             $handkerchiefHistory = HandkerchiefHistory::create([
                 'user_id' => $request->user()->name,
@@ -128,7 +135,9 @@ class HandkerchiefController extends Controller
                 $handkerchief->defective_products -= $handkerchiefHistory->sold_defective_products;
                 $handkerchief->save();
             } else {
-                return 'Mahsulot yetarli emas';
+                throw ValidationException::withMessages([
+                    'message' => "Sotuv uchun so'ralayotgan miqdorda mahsulot mavjud emas"
+                ]);
             }
             return $this->success('Sotilgan mahsulot', $handkerchiefHistory);
         }

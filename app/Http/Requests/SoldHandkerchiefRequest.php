@@ -36,8 +36,6 @@ class SoldHandkerchiefRequest extends FormRequest
             "sold_out" => "required|boolean",
             "sold_products" => "required|numeric",
             "sold_defective_products" => "required|numeric",
-            "company" => "required|string",
-            "address" => "nullable|string"
         ];
     }
 }

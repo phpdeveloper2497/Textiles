@@ -19,7 +19,7 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
-                'massages' => "Taxallus yoki parol xato kiritildi! ",
+                'message' => "Taxallus yoki parol xato kiritildi! "
             ]);
         }
         $token = $user->createToken($request->nickname)->plainTextToken;

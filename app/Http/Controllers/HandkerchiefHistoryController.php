@@ -65,7 +65,7 @@ class HandkerchiefHistoryController extends Controller
             $sortOrder = 'desc';
         }
 
-        $history = $handkerchiefHistory->orderBy($sortBy, $sortOrder)->paginate(15);
+        $history = $handkerchiefHistory->with('user')->orderBy($sortBy, $sortOrder)->paginate(15);
 
         return HandkerchiefHistoryResource::collection($history);
     }

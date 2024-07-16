@@ -56,7 +56,7 @@ class BoxHistoryController extends Controller
         } else {
             $sortOrder = 'desc';
         }
-        $history = $boxHistory->orderBy($sortBy, $sortOrder)->paginate(20);
+        $history = $boxHistory->with('user')->orderBy($sortBy, $sortOrder)->paginate(20);
         return $this->reply(BoxHistoryResource::collection($history));
     }
 

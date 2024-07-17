@@ -137,7 +137,7 @@ class BoxHistoryController extends Controller
                 "length" => $request->per_pc_meter * $request->pc,
                 "commentary" => $request->commentary
             ]);
-            Recalculate::dispatch($boxHistory);
+//            Recalculate::dispatch($boxHistory);
             return $this->success('Mahsulot hisoboti muvoffaqiyatli yaratildi', new StoreBoxHistoryResource($boxHistory));
 
         } else {

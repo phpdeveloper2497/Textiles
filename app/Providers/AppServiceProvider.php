@@ -32,10 +32,10 @@ class AppServiceProvider extends ServiceProvider
             BoxRepositoryInterface::class,
             BoxRepository::class,
         );
-        $this->app->bind(
+      /*  $this->app->bind(
             BoxHistoryRepositoryInterface::class,
-            BoxHIstoryRepository::class,
-        );
+            BoxHistoryRepository::class,
+        );*/
     }
 
     /**

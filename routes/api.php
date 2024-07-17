@@ -21,10 +21,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//    return $request->user();
-//});
-
 Route::post('login', [AuthController::class, 'login']);
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
@@ -34,7 +30,6 @@ Route::controller(AuthController::class)->group(function () {
 
 });
 
-//Route::get('boxes/{id}/workshop',[BoxController::class,'workshop']);
 Route::get('box-histories/workshop', [BoxHistoryController::class, 'workshop']);
 Route::post('handkerchiefs/{handkerchief}/view-history', [HandkerchiefController::class, 'viewHandkerchiefHistory']);
 Route::post('handkerchief-histories/sold', [HandkerchiefHistoryController::class, 'sold'])->middleware('auth:sanctum');
@@ -53,12 +48,12 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-Route::apiResources([
-    'users' => UserController::class,
-    'boxes' => BoxController::class,
-    'box-histories' => BoxHistoryController::class,
-    'handkerchiefs' => HandkerchiefController::class,
-    'handkerchief-histories' => HandkerchiefHistoryController::class,
+    Route::apiResources([
+        'users' => UserController::class,
+        'boxes' => BoxController::class,
+        'box-histories' => BoxHistoryController::class,
+        'handkerchiefs' => HandkerchiefController::class,
+        'handkerchief-histories' => HandkerchiefHistoryController::class,
 //    "soldhandkerchiefs" =>SoldHankerchiefController::class,
-]);
+    ]);
 });

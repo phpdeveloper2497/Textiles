@@ -73,10 +73,9 @@ class HandkerchiefHistoryController extends Controller
 
     public function store(StoreHandkerchiefHistoryRequest $request)
     {
-//            Gate::authorize('create', HandkerchiefHistory::class);
+            Gate::authorize('create', HandkerchiefHistory::class);
         $handkerchief = Handkerchief::find($request->handkerchief_id);
-//dd($handkerchief->box->boxHistories->where("in_storage","=", true));
-//if ($handkerchief->box->out_storage)
+
         if ($handkerchief->box->boxHistories->where("out_storage", "=", true)) {
             $handkerchiefHistory = HandkerchiefHistory::create([
                 'user_id' => $request->user()->id,
@@ -108,33 +107,7 @@ class HandkerchiefHistoryController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-//    public function show(Request $request, HandkerchiefHistory $handkerchiefHistory) :LengthAwarePaginator
-//    {
-//        if ($request->filled('storage_in')) {
-//            $handkerchiefHistory->where("storage_in", $request->get('storage_in'));
-//        }
-//        if ($request->filled('sold_out')) {
-//            $handkerchiefHistory->where('sold_out', $request->get('sold_out'));
-//        }
-//        if ($request->user_id) {
-//            $handkerchiefHistory->where('user_id', $request->user_id);
-//        }
-//        if($request->sortBy && in_array($request->sortBy, ['id', 'created_at'])) {
-//            $sortBy = $request->sortBy;
-//        } else {
-//            $sortBy = 'id';
-//        }
-//        if ($request->sortOrder && in_array($request->sortOrder,['asc', 'desc'])) {
-//            $sortOrder = $request->sortOrder;
-//        } else {
-//            $sortOrder = 'desc';
-//        }
-//        $history = $handkerchiefHistory->orderBy($sortBy,$sortOrder)->paginate(15);
-//        return new HandkerchiefHistoryResource($history);
-//    }
+
 
     public function show(Request $request, HandkerchiefHistory $handkerchiefHistory): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
@@ -222,58 +195,5 @@ class HandkerchiefHistoryController extends Controller
         return new SoldHandkerchiefResource($handkerchiefHistory);
 //        return $this->success('Sotilgan mahsulot', $handkerchiefHistory);
     }
-    }
-
-
-
-
-
-
-
-
-    public function check(): void
-    {
-
-        $boxes = Box::all();
-
-        foreach ($boxes as $box) {
-            $outgoing_materials = $box->boxHistories->where('out_storage', '=', true)->sum('length');
-            $plan_amount = $outgoing_materials * $box->per_liner_meter;
-            $handkerchiefs_all = $box->handkerchief->sum('all_products');
-            $handkerchiefs_finish = $box->handkerchief->handkerchiefHistories()->where("sold_out", "=", true)->sum('sold_products');
-            $handkerchiefs_defect = $box->handkerchief->handkerchiefHistories()->where("sold_out", "=", true)->sum('sold_defective_products');
-            $all_finished_products = $handkerchiefs_all + $handkerchiefs_finish + $handkerchiefs_defect;
-            $in_progress = $plan_amount - $all_finished_products;
-            $in_progress_material = $in_progress / $box->per_liner_meter;
-            // if(abs($in_progress) > 5 dona ){}
-            if (abs($in_progress_material) > 1 ){
-                $boxhistory = BoxHistory::create([
-                    "box_id" => $box->id,
-                    "user_id" => auth()->user(),
-                    "in_storage" => 0,
-                    "out_storage" => 0,
-                    "returned" => 1,
-                    "per_pc_meter" => 0,
-                    "pc" => 0,
-                    "length" => $in_progress_material,
-                    "commentary" => 'Sexda qolgan material skladga keltirildi'
-                ]);
-
-                $boxhistory = BoxHistory::create([
-                    "box_id" => $box->id,
-                    "user_id" => auth()->user(),
-                    "in_storage" => 0,
-                    "out_storage" => 1,
-                    "returned" => 0,
-                    "per_pc_meter" => 0,
-                    "pc" => 0,
-                    "length" => $in_progress_material,
-                    "commentary" => 'Sexga ish tugaganda kelgan material qaytib sexga chiqarib yuborildi',
-                    'created_at' => Carbon::tomorrow(),
-                    'updated_at' => Carbon::tomorrow()
-                ]);
-            }
-        }
-
     }
 }

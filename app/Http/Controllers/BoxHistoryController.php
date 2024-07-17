@@ -69,7 +69,7 @@ class BoxHistoryController extends Controller
 
         $current_time = Carbon::now();
         $target_time_end_day = Carbon::today()->setHour(22)->setMinute(59)->setSecond(0);
-        $target_time_start_day = Carbon::today()->setHour(7)->setMinute(00)->setSecond(0);
+        $target_time_start_day = Carbon::today()->setHour(07)->setMinute(00)->setSecond(0);
 
         $length = $request->per_pc_meter * $request->pc;
 
@@ -124,6 +124,7 @@ class BoxHistoryController extends Controller
             }
 
             //////*******************************////////////////////////////////////////////////////////
+
 
             $boxHistory = BoxHistory::create([
                 "box_id" => $request->box_id,

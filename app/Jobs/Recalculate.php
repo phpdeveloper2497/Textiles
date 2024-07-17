@@ -4,12 +4,14 @@ namespace App\Jobs;
 
 use App\Models\Box;
 use App\Models\BoxHistory;
+use App\Models\Handkerchief;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Validation\ValidationException;
 
 class Recalculate implements ShouldQueue
 {
@@ -35,19 +37,19 @@ class Recalculate implements ShouldQueue
         foreach ($boxes as $box) {
             $outgoing_materials = $box->boxHistories->where('out_storage', '=', true)->sum('length');
             $plan_amount = $outgoing_materials * $box->per_liner_meter;
-            $handkerchiefs_all = $box->handkerchief->sum('all_products');
-//            $handkerchiefs_finish = $box->handkerchief->handkerchiefHistories()->where("sold_out", "=", true)->sum('sold_products');
-//            $handkerchiefs_defect = $box->handkerchief->handkerchiefHistories()->where("sold_out", "=", true)->sum('sold_defective_products');
-//            $all_finished_products = $handkerchiefs_all + $handkerchiefs_finish + $handkerchiefs_defect;
-//            $all_finished_products = $handkerchiefs_finish + $handkerchiefs_defect;
 
-            $in_progress = $plan_amount - $handkerchiefs_all;
+            if (is_null($box->handkerchief)) {
+                $in_progress = $plan_amount;
+            } else {
+                $handkerchiefs_all = $box->handkerchief->sum('all_products');
+                $in_progress = $plan_amount - $handkerchiefs_all;
+            }
             $in_progress_material = $in_progress / $box->per_liner_meter;
             // if(abs($in_progress) > 5 dona ){}
-            if (abs($in_progress_material) > 1 ){
-                $boxhistory = BoxHistory::create([
+            if (abs($in_progress_material) > 1) {
+                BoxHistory::create([
                     "box_id" => $box->id,
-                    "user_id" => auth()->user(),
+                    "user_id" => auth()->user()->id,
                     "in_storage" => 0,
                     "out_storage" => 0,
                     "returned" => 1,
@@ -57,9 +59,9 @@ class Recalculate implements ShouldQueue
                     "commentary" => 'Sexda qolgan material skladga keltirildi'
                 ]);
 
-                $boxhistory = BoxHistory::create([
+                BoxHistory::create([
                     "box_id" => $box->id,
-                    "user_id" => auth()->user(),
+                    "user_id" => auth()->user()->id,
                     "in_storage" => 0,
                     "out_storage" => 1,
                     "returned" => 0,

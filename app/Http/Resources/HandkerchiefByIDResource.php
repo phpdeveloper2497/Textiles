@@ -17,9 +17,9 @@ class HandkerchiefByIDResource extends JsonResource
     {
         $notPackaged = null;
 
-        if (HandkerchiefHistory::where('storage_in', true)->exists()) {
-            $notPackaged = $this->all_products - $this->finished_products - $this->defective_products;
-        }
+//        if (HandkerchiefHistory::where('storage_in', true)->exists()) {
+//            $notPackaged = $this->all_products - $this->finished_products - $this->defective_products;
+//        }
 
         return [
             'id' => $this->id,

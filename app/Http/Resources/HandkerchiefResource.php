@@ -14,11 +14,12 @@ class HandkerchiefResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+//        dd($this->handkerchiefHistories->first()->finished_products);
         return [
             'id' => $this->id,
             'name' => $this->name,
             'sort_plane' => $this->sort_plane,
-            'all_products' => $this->all_products,
+            'all_products' => $this->handkerchiefHistories->first()->finished_products+ $this->handkerchiefHistories->first()->defective_products,
 //            'defective_products' => $this->defective_products,
 //            'finished_products' => $this->finished_products,
 //            'not_packaged' => $this->not_packaged,

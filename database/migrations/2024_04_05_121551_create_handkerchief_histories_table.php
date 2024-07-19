@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('handkerchief_id')->constrained();
             $table->foreignId('user_id')->constrained();
             $table->boolean('storage_in');
-            $table->integer('all_products')->default(0);
+//            $table->integer('all_products')->default(0);
             $table->integer('finished_products')->default(0);
             $table->integer('defective_products')->default(0);
             $table->boolean('sold_out')->default(false);

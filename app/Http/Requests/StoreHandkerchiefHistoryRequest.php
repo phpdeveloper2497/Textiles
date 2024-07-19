@@ -33,7 +33,7 @@ class StoreHandkerchiefHistoryRequest extends FormRequest
                 "exists:handkerchiefs,id",
                 "numeric"
             ],
-            'all_products' => "required|numeric",
+//            'all_products' => "required|numeric",
             'finished_products' => "required|numeric",
             'defective_products' => "required|numeric",
         ];

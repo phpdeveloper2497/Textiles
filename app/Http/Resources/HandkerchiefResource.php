@@ -19,10 +19,9 @@ class HandkerchiefResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'sort_plane' => $this->sort_plane,
-            'all_products' => $this->handkerchiefHistories->first()->finished_products+ $this->handkerchiefHistories->first()->defective_products,
-//            'defective_products' => $this->defective_products,
-//            'finished_products' => $this->finished_products,
-//            'not_packaged' => $this->not_packaged,
+            'all_products' => $this->finished_products +  $this->defective_products - $this->sold_products -  $this->sold_defective_products,
+            'finished_products' => $this->finished_products,
+            'defective_products' => $this->defective_products,
             "image_path" =>config('app.url')."/storage/". $this->image_path,
         ];
     }

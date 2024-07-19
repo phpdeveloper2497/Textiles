@@ -17,8 +17,8 @@ class SoldHandkerchiefResource extends JsonResource
         return [
             'id' => $this->id,
             'user' => $this->user->nickname,
-            'company' => $this->company,
-            'address' => $this->address,
+//            'company' => $this->company,
+//            'address' => $this->address,
 
             'sold_out' => $this->sold_out,
             'handkerchief' => $this->handkerchief->name,

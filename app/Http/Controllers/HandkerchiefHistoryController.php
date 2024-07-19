@@ -81,7 +81,7 @@ class HandkerchiefHistoryController extends Controller
                 'user_id' => $request->user()->id,
                 'handkerchief_id' => $request->handkerchief_id,
                 'storage_in' => $request->storage_in,
-                'all_products' => $request->all_products,
+//                'all_products' => $request->all_products,
                 'finished_products' => $request->finished_products,
                 'defective_products' => $request->defective_products
             ]);
@@ -175,7 +175,7 @@ class HandkerchiefHistoryController extends Controller
                     'user_id' => $request->user()->id,
                     'handkerchief_id' => $request->handkerchief_id,
                     'storage_in' => 0,
-                    'all_products' => 0,
+//                    'all_products' => 0,
                     'finished_products' => 0,
                     'defective_products' => 0,
                     "sold_out" => $request->sold_out,

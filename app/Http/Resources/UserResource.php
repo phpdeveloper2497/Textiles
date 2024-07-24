@@ -14,9 +14,6 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        if ($this->is_admin) {
-            return [];
-        }else {
             return [
                 'user_id' => $this->id,
                 'first_name' => $this->first_name,
@@ -25,8 +22,5 @@ class UserResource extends JsonResource
                 'nickname' => $this->nickname,
                 'roles' => RoleListResource::collection($this->whenLoaded('roles'))
             ];
-        }
-
-
     }
 }

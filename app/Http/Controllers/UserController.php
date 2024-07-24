@@ -30,7 +30,7 @@ class UserController extends Controller
                 'message' => "Sizda bu yerga kirish uchun ruxsat yo'q"
             ]);
         }else {
-            $user = User::with('roles')->get();
+            $user = User::with('roles')->where('is_admin',false)->get();
             return UserResource::collection($user);
         }
 

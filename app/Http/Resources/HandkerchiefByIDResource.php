@@ -23,7 +23,7 @@ class HandkerchiefByIDResource extends JsonResource
 
         return [
             'id' => $this->id,
-            'all_products' => $this->finished_products +  $this->defective_products,
+            'all_products' => $this->finished_products +  $this->defective_products - $this->sold_products -  $this->sold_defective_products,
             'finished_products' => $this->finished_products,
             'defective_products' => $this->defective_products,
             'sold_products' => $this->sold_products,

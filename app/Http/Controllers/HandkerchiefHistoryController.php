@@ -25,6 +25,7 @@ class HandkerchiefHistoryController extends Controller
     {
         $this->middleware('auth');
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -73,7 +74,7 @@ class HandkerchiefHistoryController extends Controller
 
     public function store(StoreHandkerchiefHistoryRequest $request)
     {
-            Gate::authorize('create', HandkerchiefHistory::class);
+        Gate::authorize('create', HandkerchiefHistory::class);
         $handkerchief = Handkerchief::find($request->handkerchief_id);
 
         if ($handkerchief->box->boxHistories->where("out_storage", "=", true)) {
@@ -106,7 +107,6 @@ class HandkerchiefHistoryController extends Controller
             ]);
         }
     }
-
 
 
     public function show(Request $request, HandkerchiefHistory $handkerchiefHistory): \Illuminate\Contracts\Pagination\LengthAwarePaginator
@@ -164,9 +164,9 @@ class HandkerchiefHistoryController extends Controller
         }
     }
 
-    public function sold(SoldHandkerchiefRequest $request,HandkerchiefHistory $handkerchiefHistory)
+    public function sold(SoldHandkerchiefRequest $request, HandkerchiefHistory $handkerchiefHistory)
     {
-        $handkerchief =Handkerchief::findOrFail($request->handkerchief_id);
+        $handkerchief = Handkerchief::findOrFail($request->handkerchief_id);
         if (!Gate::allows('sold', HandkerchiefHistory::class)) {
             return response()->json(["Sizda bu yerga kirish uchun ruxsat yo'q"], 403);
         } else {
@@ -180,20 +180,20 @@ class HandkerchiefHistoryController extends Controller
                     'defective_products' => 0,
                     "sold_out" => $request->sold_out,
                     "sold_products" => $request->sold_products,
-                    "sold_defective_products" => $request->sold_defective_products]);
-            }else{
+                    "sold_defective_products" => $request->sold_defective_products
+                ]);
+            } else {
                 return $this->error('Omborda ushbu mahsulotdan siz so\'rayotgan miqdorda mavjud emas');
             }
 
-        if ($request->sold_out === true && $handkerchiefHistory->sold_products < $handkerchief->finished_products && $handkerchiefHistory->sold_defective_products < $handkerchief->defective_products) {
-            $handkerchief->finished_products -= $handkerchiefHistory->sold_products;
-            $handkerchief->defective_products -= $handkerchiefHistory->sold_defective_products;
-            $handkerchief->save();
-        } else {
-            return 'Mahsulot yetarli emas';
+            if ($request->sold_out === true && $handkerchiefHistory->sold_products < $handkerchief->finished_products && $handkerchiefHistory->sold_defective_products < $handkerchief->defective_products) {
+                $handkerchief->finished_products -= $handkerchiefHistory->sold_products;
+                $handkerchief->defective_products -= $handkerchiefHistory->sold_defective_products;
+                $handkerchief->save();
+            } else {
+                return 'Mahsulot yetarli emas';
+            }
+            return new SoldHandkerchiefResource($handkerchiefHistory);
         }
-        return new SoldHandkerchiefResource($handkerchiefHistory);
-//        return $this->success('Sotilgan mahsulot', $handkerchiefHistory);
-    }
     }
 }

@@ -14,9 +14,9 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-//        if ($this->is_admin) {
-//            return [];
-//        }
+        if ($this->is_admin) {
+            return [];
+        }
 
         return [
             'user_id' => $this->id,

@@ -16,15 +16,17 @@ class UserResource extends JsonResource
     {
         if ($this->is_admin) {
             return [];
+        }else {
+            return [
+                'user_id' => $this->id,
+                'first_name' => $this->first_name,
+                'last_name' => $this->last_name,
+                'phone' => $this->phone,
+                'nickname' => $this->nickname,
+                'roles' => RoleListResource::collection($this->whenLoaded('roles'))
+            ];
         }
 
-        return [
-            'user_id' => $this->id,
-            'first_name' => $this->first_name,
-            'last_name' => $this->last_name,
-            'phone' => $this->phone,
-            'nickname' => $this->nickname,
-            'roles' => RoleListResource::collection($this->whenLoaded('roles'))
-        ];
+
     }
 }

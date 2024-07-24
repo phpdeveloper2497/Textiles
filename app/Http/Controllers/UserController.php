@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateUsersRequest;
 use App\Http\Resources\RoleListResource;
+use App\Http\Resources\ShowUserResource;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -42,7 +43,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
         $user->load('roles');
-        return $this->reply(new UserResource($user));
+        return $this->reply(new ShowUserResource($user));
 
     }
 

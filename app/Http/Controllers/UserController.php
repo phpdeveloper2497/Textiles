@@ -62,7 +62,10 @@ class UserController extends Controller
             $user->update();
             return $this->success('User updated successfully', $user);
         } else {
-            return $this->error('You\'re not allowed to do this');
+            throw ValidationException::withMessages([
+                'message' => "Sizda bu yerga kirish uchun ruxsat yo'q"
+            ]);
+//            return $this->error('You\'re not allowed to do this');
         }
     }
 
@@ -86,7 +89,10 @@ class UserController extends Controller
     public function assignRole(Request $request, $id)
     {
         if (!Gate::authorize('assignRole', User::class)) {
-            return response()->json(["Sizda lavozim tayinlash huquqi mavjud emas"],);
+            throw ValidationException::withMessages([
+                'message' => "Sizda lavozim tayinlash huquqi mavjud emas"
+            ]);
+//            return response()->json(["Sizda lavozim tayinlash huquqi mavjud emas"],);
         } else {
             $user = User::findOrFail($id);
             $user->assignRole($request->role);
@@ -110,7 +116,10 @@ class UserController extends Controller
                 return $this->success('Rol foydalanuvchidan olib tashlandi.');
             }
         } else {
-            return $this->success('Foydalanuvchida bunday rol mavjud emas.');
+            throw ValidationException::withMessages([
+                'message' => "Foydalanuvchida bunday rol mavjud emas"
+            ]);
+//            return $this->success('Foydalanuvchida bunday rol mavjud emas.');
         }
     }
 

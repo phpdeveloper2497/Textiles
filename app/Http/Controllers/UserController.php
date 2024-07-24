@@ -8,6 +8,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
@@ -23,8 +24,15 @@ class UserController extends Controller
 
     public function index()
     {
-        $user = User::with('roles')->get();
-        return UserResource::collection($user);
+        if (!Gate::authorize('viewAny', User::class)) {
+            throw ValidationException::withMessages([
+                'message' => "Sizda bu yerga kirish uchun ruxsat yo'q"
+            ]);
+        }else {
+            $user = User::with('roles')->get();
+            return UserResource::collection($user);
+        }
+
     }
 
     /**
@@ -76,13 +84,13 @@ class UserController extends Controller
 
     public function assignRole(Request $request, $id)
     {
-       if(!Gate::authorize('assignRole', User::class)){
-                     return response()->json(["Sizda lavozim tayinlash huquqi mavjud emas"],);
-       }else{
-        $user = User::findOrFail($id);
-        $user->assignRole($request->role);
-        return $this->success('Userga role berildi', $user);
-       }
+        if (!Gate::authorize('assignRole', User::class)) {
+            return response()->json(["Sizda lavozim tayinlash huquqi mavjud emas"],);
+        } else {
+            $user = User::findOrFail($id);
+            $user->assignRole($request->role);
+            return $this->success('Userga role berildi', $user);
+        }
     }
 
     public function removeRole(Request $request, $id)

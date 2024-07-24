@@ -157,7 +157,9 @@ class HandkerchiefHistoryController extends Controller
     public function destroy(HandkerchiefHistory $handkerchiefHistory)
     {
         if (!Gate::authorize('delete', $handkerchiefHistory)) {
-            return response("Sizda bu yerga kirish uchun ruxsat yo'q");
+            throw ValidationException::withMessages([
+                'message' => "Sizda bu yerga kirish uchun ruxsat yo'q"
+            ]);
         } else {
             $handkerchiefHistory->delete();
             return "Id raqami $handkerchiefHistory->id ga teng bo'lgan tarix o'chirib yuborildi";
@@ -183,7 +185,9 @@ class HandkerchiefHistoryController extends Controller
                     "sold_defective_products" => $request->sold_defective_products
                 ]);
             } else {
-                return $this->error('Omborda ushbu mahsulotdan siz so\'rayotgan miqdorda mavjud emas');
+                throw ValidationException::withMessages([
+                    'message' => "Omborda ushbu mahsulotdan siz so'rayotgan miqdorda mavjud emas "
+                ]);
             }
 
             if ($request->sold_out === true && $handkerchiefHistory->sold_products < $handkerchief->finished_products && $handkerchiefHistory->sold_defective_products < $handkerchief->defective_products) {
@@ -191,7 +195,9 @@ class HandkerchiefHistoryController extends Controller
                 $handkerchief->defective_products -= $handkerchiefHistory->sold_defective_products;
                 $handkerchief->save();
             } else {
-                return 'Mahsulot yetarli emas';
+                throw ValidationException::withMessages([
+                    'message' => "Mahsulot yetarli emas "
+                ]);
             }
             return new SoldHandkerchiefResource($handkerchiefHistory);
         }

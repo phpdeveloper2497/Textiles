@@ -80,10 +80,10 @@ class RolePermissionSeeder extends Seeder
         $admin->syncPermissions($permissions,$userPermissions,$boxPermissions,$boxHistoryPermissions,$handkerchiefPermissions,$handkerchiefHistoryPermissions,$SoldHankerchiefPermissions);
 
         $Ombor_mudiri = Role::create(['name' => 'Ombor mudiri', 'guard_name' => 'web']);
-        $Ombor_mudiri->syncPermissions($boxPermissions,$boxHistoryPermissions,'user:viewAny');
+        $Ombor_mudiri->syncPermissions($boxPermissions,$boxHistoryPermissions);
 
         $Ish_boshqaruvchi = Role::create(['name' => 'Ish boshqaruvchi', 'guard_name' => 'web']);
-        $Ish_boshqaruvchi->syncPermissions($handkerchiefPermissions,$handkerchiefHistoryPermissions,'user:viewAny');
+        $Ish_boshqaruvchi->syncPermissions($handkerchiefPermissions,$handkerchiefHistoryPermissions);
 
         $worker = Role::create(['name' => 'worker', 'guard_name' => 'web']);
 //        $worker->syncPermissions('user:view');

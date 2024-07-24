@@ -18,6 +18,7 @@ class UserSeeder extends Seeder
             'last_name' => 'admin',
             'nickname' => 'admin',
             'phone' => '+998945400807',
+            'is_admin' => true,
             'password' => 'password'
 
         ]);
@@ -28,6 +29,7 @@ class UserSeeder extends Seeder
             'last_name' => 'manager',
             'nickname' => 'john',
             'phone' => '+99995719769',
+            'is_admin' => false,
             'password' => 'password'
         ]);
         $user->assignRole('Ombor mudiri');

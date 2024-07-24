@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('nickname')->unique();
             $table->string('phone')->unique();
+            $table->boolean('is_admin')->default(false);
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

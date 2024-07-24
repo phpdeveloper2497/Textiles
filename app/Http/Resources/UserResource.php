@@ -14,6 +14,10 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        if ($this->is_admin) {
+            return []; // Admin foydalanuvchini qaytarmaslik uchun bo'sh array qaytarish
+        }
+
         return [
             'user_id' => $this->id,
             'first_name' => $this->first_name,
